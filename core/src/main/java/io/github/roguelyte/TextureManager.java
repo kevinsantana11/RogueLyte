@@ -1,12 +1,12 @@
-package io.github.rogue_lyte;
+package io.github.roguelyte;
 
+import com.badlogic.gdx.graphics.Texture;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.badlogic.gdx.graphics.Texture;
-
 public class TextureManager {
     Map<String, Texture> textureMap;
+
     public TextureManager(Map<String, Texture> initialTxMap) {
         textureMap = initialTxMap;
     }
@@ -20,7 +20,7 @@ public class TextureManager {
     }
 
     public void cleanup() {
-        for(Entry<String, Texture> entry : textureMap.entrySet()) {
+        for (Entry<String, Texture> entry : textureMap.entrySet()) {
             entry.getValue().dispose();
         }
     }

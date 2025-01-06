@@ -12,17 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//Note, the above license and copyright applies to this file only.
+// Note, the above license and copyright applies to this file only.
 
-package io.github.rogue_lyte.lwjgl3;
-
-import org.lwjgl.system.macosx.LibC;
+package io.github.roguelyte.lwjgl3;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
+import org.lwjgl.system.macosx.LibC;
 
 /**
  * Adds some utilities to ensure that the JVM was started with the
@@ -33,7 +32,7 @@ import java.util.ArrayList;
  * <a href="https://jvm-gaming.org/t/starting-jvm-on-mac-with-xstartonfirstthread-programmatically/57547">Based on this java-gaming.org post by kappa</a>
  * @author damios
  */
-public class StartupHelper {
+public final class StartupHelper {
 
     private static final String JVM_RESTARTED_ARG = "jvmIsRestarted";
 
@@ -69,10 +68,14 @@ public class StartupHelper {
         String osName = System.getProperty("os.name").toLowerCase();
         if (!osName.contains("mac")) {
             if (osName.contains("windows")) {
-// Here, we are trying to work around an issue with how LWJGL3 loads its extracted .dll files.
-// By default, LWJGL3 extracts to the directory specified by "java.io.tmpdir", which is usually the user's home.
-// If the user's name has non-ASCII (or some non-alphanumeric) characters in it, that would fail.
-// By extracting to the relevant "ProgramData" folder, which is usually "C:\ProgramData", we avoid this.
+                // Here, we are trying to work around an issue with how LWJGL3 loads its extracted
+                // .dll files.
+                // By default, LWJGL3 extracts to the directory specified by "java.io.tmpdir", which
+                // is usually the user's home.
+                // If the user's name has non-ASCII (or some non-alphanumeric) characters in it,
+                // that would fail.
+                // By extracting to the relevant "ProgramData" folder, which is usually
+                // "C:\ProgramData", we avoid this.
                 System.setProperty("java.io.tmpdir", System.getenv("ProgramData") + "/libGDX-temp");
             }
             return false;
@@ -94,7 +97,8 @@ public class StartupHelper {
         // avoids looping, but most certainly leads to a crash
         if ("true".equals(System.getProperty(JVM_RESTARTED_ARG))) {
             System.err.println(
-                    "There was a problem evaluating whether the JVM was started with the -XstartOnFirstThread argument.");
+                    "There was a problem evaluating whether the JVM was started with the"
+                            + " -XstartOnFirstThread argument.");
             return false;
         }
 
@@ -102,13 +106,16 @@ public class StartupHelper {
         ArrayList<String> jvmArgs = new ArrayList<>();
         String separator = System.getProperty("file.separator");
         // The following line is used assuming you target Java 8, the minimum for LWJGL3.
-        String javaExecPath = System.getProperty("java.home") + separator + "bin" + separator + "java";
+        String javaExecPath =
+                System.getProperty("java.home") + separator + "bin" + separator + "java";
         // If targeting Java 9 or higher, you could use the following instead of the above line:
-        //String javaExecPath = ProcessHandle.current().info().command().orElseThrow();
+        // String javaExecPath = ProcessHandle.current().info().command().orElseThrow();
 
         if (!(new File(javaExecPath)).exists()) {
             System.err.println(
-                    "A Java installation could not be found. If you are distributing this app with a bundled JRE, be sure to set the -XstartOnFirstThread argument manually!");
+                    "A Java installation could not be found. If you are distributing this app with"
+                            + " a bundled JRE, be sure to set the -XstartOnFirstThread argument"
+                            + " manually!");
             return false;
         }
 
@@ -135,10 +142,9 @@ public class StartupHelper {
                 ProcessBuilder processBuilder = new ProcessBuilder(jvmArgs);
                 processBuilder.start();
             } else {
-                Process process = (new ProcessBuilder(jvmArgs))
-                        .redirectErrorStream(true).start();
-                BufferedReader processOutput = new BufferedReader(
-                        new InputStreamReader(process.getInputStream()));
+                Process process = (new ProcessBuilder(jvmArgs)).redirectErrorStream(true).start();
+                BufferedReader processOutput =
+                        new BufferedReader(new InputStreamReader(process.getInputStream()));
                 String line;
 
                 while ((line = processOutput.readLine()) != null) {

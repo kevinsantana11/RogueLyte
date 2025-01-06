@@ -1,32 +1,32 @@
-package io.github.rogue_lyte;
-
-import java.util.ArrayList;
-import java.util.List;
+package io.github.roguelyte;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Player implements GameObject {
-    private Sprite sprite;
-    private float speed;
-    private float width;
-    private float height;
+public class Player extends Character {
+    private final float speed;
 
-    public Player(Texture texture, float width, float height, float speed) {
+    public Player(
+            Texture texture,
+            ShapeRenderer shapeRenderer,
+            float width,
+            float height,
+            float startingHealth,
+            float speed) {
+        super("player", texture, shapeRenderer, width, height, startingHealth);
         this.speed = speed;
-        this.width = width;
-        this.height = height;
-        sprite = new Sprite(texture);
-        sprite.setSize(width, height);
     }
 
     @Override
-    public void draw(float deltaTime, SpriteBatch batch) {
+    public boolean drawSprites(float deltaTime, SpriteBatch batch) {
         batch.draw(sprite.getTexture(), sprite.getX(), sprite.getY(), width, height);
+        return false;
     }
 
     public List<Action> processInputs(float deltaTime) {
@@ -51,10 +51,14 @@ public class Player implements GameObject {
             actions.add(new Move(sprite.getX(), sprite.getY()));
         }
 
-        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
-            Action action = new InvokeSpell("fireball",
-                new Vector2(sprite.getX(), sprite.getY()),
-                new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+            Action action =
+                    new InvokeSpell(
+                            "fireball",
+                            new Vector2(
+                                    sprite.getX() + (sprite.getWidth() / 2),
+                                    sprite.getY() + (sprite.getHeight() / 2)),
+                            new Vector2(Gdx.input.getX(), Gdx.input.getY()));
             actions.add(action);
         }
 
@@ -68,5 +72,4 @@ public class Player implements GameObject {
     public float getY() {
         return sprite.getY();
     }
-    
 }
