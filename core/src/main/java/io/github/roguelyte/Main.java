@@ -26,12 +26,11 @@ public class Main extends ApplicationAdapter {
     public void create() {
         batch = new SpriteBatch();
         viewport = new FitViewport(8, 5);
-        txMap =
-                Map.of(
-                        "background", new Texture("terrain/L1_Grass.PNG"),
-                        "player", new Texture("players/battlemage.gif"),
-                        "demon", new Texture("players/demon.gif"),
-                        "fireball", new Texture("spells/Fireball.png"));
+        txMap = Map.of(
+            "background", new Texture("terrain/L1_Grass.PNG"),
+            "player", new Texture("players/battlemage.gif"),
+            "demon", new Texture("players/demon.gif"),
+            "fireball", new Texture("spells/Fireball.png"));
 
         shapeRenderer = new ShapeRenderer();
 
@@ -62,6 +61,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void render() {
         float deltaTime = Gdx.graphics.getDeltaTime();
+        game.step(deltaTime, viewport, txMap);
 
         // Setup the camera to follow the player
         viewport.getCamera().position.set(game.getPlayer().getSprite().getX(), game.getPlayer().getSprite().getY(), 0);
@@ -74,7 +74,6 @@ public class Main extends ApplicationAdapter {
 
         // Draw sprites
         batch.begin();
-        game.step(deltaTime, viewport, txMap);
         game.drawSprites(deltaTime, batch);
         batch.end();
 

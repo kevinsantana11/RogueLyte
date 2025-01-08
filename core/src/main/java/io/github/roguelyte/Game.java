@@ -88,19 +88,19 @@ public class Game implements Drawable {
     @Override
     public void drawSprites(float deltaTime, SpriteBatch batch) {
         level.drawSprites(deltaTime, batch);
-        for (Drawable go : this.characters) {
-            go.drawSprites(deltaTime, batch);
-        }
 
-        for (Drawable go : projectiles) {
-            go.drawSprites(deltaTime, batch);
+        List<Drawable> drawables = new ArrayList<>(characters);
+        drawables.addAll(projectiles);
+
+        for (Drawable drawable : drawables) {
+            drawable.drawSprites(deltaTime, batch);
         }
     }
 
     @Override
     public void drawShapes(float deltaTime, ShapeRenderer shapeRenderer) {
-        for (Drawable go : characters) {
-            go.drawShapes(deltaTime, shapeRenderer);
+        for (Drawable drawable : characters) {
+            drawable.drawShapes(deltaTime, shapeRenderer);
         }
     }
 }
