@@ -3,30 +3,18 @@ package io.github.roguelyte;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Player extends Character {
-    private final float speed;
-
     public Player(
             Texture texture,
-            ShapeRenderer shapeRenderer,
             float width,
             float height,
             float startingHealth,
             float speed) {
-        super("player", texture, shapeRenderer, width, height, startingHealth);
-        this.speed = speed;
-    }
-
-    @Override
-    public boolean drawSprites(float deltaTime, SpriteBatch batch) {
-        batch.draw(sprite.getTexture(), sprite.getX(), sprite.getY(), width, height);
-        return false;
+        super("player", texture, width, height, startingHealth, speed);
     }
 
     public List<Action> processInputs(float deltaTime) {
@@ -63,13 +51,5 @@ public class Player extends Character {
         }
 
         return actions;
-    }
-
-    public float getX() {
-        return sprite.getX();
-    }
-
-    public float getY() {
-        return sprite.getY();
     }
 }

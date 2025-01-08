@@ -6,8 +6,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import java.util.ArrayList;
@@ -22,16 +20,7 @@ public class Main extends ApplicationAdapter {
     private ShapeRenderer shapeRenderer;
     private FitViewport viewport;
     private Map<String, Texture> txMap;
-    private Player player;
-    private final List<Character> characters;
-    private final List<Projectile> projectiles;
-    private final Random rand;
-
-    public Main() {
-        characters = new ArrayList<>();
-        projectiles = new ArrayList<>();
-        rand = new Random();
-    }
+    private Game game;
 
     @Override
     public void create() {
@@ -46,11 +35,23 @@ public class Main extends ApplicationAdapter {
 
         shapeRenderer = new ShapeRenderer();
 
-        player = new Player(txMap.get("player"), shapeRenderer, 1, 1, 100, 4);
-        Enemy enemy = new Enemy("demon", txMap.get("demon"), shapeRenderer, 1, 1, 100);
+        Player player = new Player(txMap.get("player"), 1, 1, 100, 4);
+        Character enemy = new Character("demon", txMap.get("demon"), 1, 1, 100, 4);
 
+        List<Character> characters = new ArrayList<>();
         characters.add(player);
         characters.add(enemy);
+
+        float worldWidth = viewport.getWorldWidth();
+        float worldHeight = viewport.getWorldWidth();
+
+        float xOrigin = 0;
+        float yOrigin = 0;
+
+        Level level = new Level(txMap.get("background"), xOrigin, yOrigin, worldWidth, worldHeight);
+
+        game = new Game(level, player, characters, new ArrayList<>(), new Random());
+
     }
 
     @Override
@@ -61,31 +62,9 @@ public class Main extends ApplicationAdapter {
     @Override
     public void render() {
         float deltaTime = Gdx.graphics.getDeltaTime();
-        gameLogic();
-        processInput(deltaTime);
-        drawScreen(deltaTime);
-    }
 
-    private void gameLogic() {
-        System.out.println(
-                String.format(
-                        "Processing %d projectile events for %d characters",
-                        projectiles.size(), characters.size()));
-        for (Projectile proj : projectiles) {
-            for (Character character : characters) {
-                float x = proj.getSprite().getX();
-                float y = proj.getSprite().getY();
-                if (character.getSprite().getBoundingRectangle().contains(x, y)
-                        && !character.equals(proj.originator)) {
-                    character.hit(proj.getAmt(), proj.getId());
-                }
-            }
-        }
-    }
-
-    private void drawScreen(float deltaTime) {
         // Setup the camera to follow the player
-        viewport.getCamera().position.set(player.getX(), player.getY(), 0);
+        viewport.getCamera().position.set(game.getPlayer().getSprite().getX(), game.getPlayer().getSprite().getY(), 0);
         viewport.getCamera().update();
         batch.setProjectionMatrix(viewport.getCamera().combined);
         shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
@@ -93,96 +72,14 @@ public class Main extends ApplicationAdapter {
         // Clear the screen
         ScreenUtils.clear(Color.GRAY);
 
+        // Draw sprites
         batch.begin();
-
-        float worldWidth = viewport.getWorldWidth();
-        float worldHeight = viewport.getWorldWidth();
-
-        float xOrigin = 0;
-        float yOrigin = 0;
-
-        // Draw level
-        Texture backgroundTexture = txMap.get("background");
-        batch.draw(backgroundTexture, xOrigin, yOrigin, worldWidth, worldHeight);
-        batch.draw(
-                backgroundTexture,
-                xOrigin + worldWidth / 2,
-                yOrigin + worldHeight / 2,
-                worldWidth,
-                worldHeight);
-        batch.draw(
-                backgroundTexture,
-                xOrigin - worldWidth / 2,
-                yOrigin + worldHeight / 2,
-                worldWidth,
-                worldHeight);
-        batch.draw(
-                backgroundTexture,
-                xOrigin + worldWidth / 2,
-                yOrigin - worldHeight / 2,
-                worldWidth,
-                worldHeight);
-        batch.draw(
-                backgroundTexture,
-                xOrigin - worldWidth / 2,
-                yOrigin - worldHeight / 2,
-                worldWidth,
-                worldHeight);
-        batch.draw(backgroundTexture, xOrigin + worldWidth, yOrigin, worldWidth, worldHeight);
-
-        // Draw game objects like characters (player / enemy) or projectiles
-        List<GameObject> cleanupList = new ArrayList<>();
-        for (GameObject go : characters) {
-            boolean cleanup = go.drawSprites(deltaTime, batch);
-
-            if (cleanup) {
-                cleanupList.add(go);
-            }
-        }
-        characters.removeAll(cleanupList);
-
-        cleanupList = new ArrayList<>();
-        for (GameObject go : projectiles) {
-            boolean cleanup = go.drawSprites(deltaTime, batch);
-
-            if (cleanup) {
-                cleanupList.add(go);
-            }
-        }
-        projectiles.removeAll(cleanupList);
+        game.step(deltaTime, viewport, txMap);
+        game.drawSprites(deltaTime, batch);
         batch.end();
 
-        for (GameObject go : characters) {
-            go.drawShapes(deltaTime, shapeRenderer);
-        }
-    }
-
-    private void processInput(float deltaTime) {
-        List<Action> actions = player.processInputs(deltaTime);
-        System.out.println(String.format("Got %d actions from processing inputs", actions.size()));
-
-        for (Action action : actions) {
-            if (action instanceof InvokeSpell) {
-                InvokeSpell invokeSpell = (InvokeSpell) action;
-
-                Vector3 end =
-                        viewport.getCamera()
-                                .unproject(new Vector3(invokeSpell.end.x, invokeSpell.end.y, 0));
-                Projectile projectile =
-                        new Projectile(
-                                player,
-                                String.format("fireball-%d", rand.nextInt()),
-                                txMap.get("fireball"),
-                                1,
-                                1,
-                                invokeSpell.start,
-                                new Vector2(end.x, end.y),
-                                2f,
-                                25,
-                                5);
-                projectiles.add(projectile);
-            }
-        }
+        // Draw Shapes
+        game.drawShapes(deltaTime, shapeRenderer);
     }
 
     @Override

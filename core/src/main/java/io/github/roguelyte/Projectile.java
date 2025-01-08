@@ -8,7 +8,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
-public class Projectile extends Damaging implements GameObject {
+import lombok.Getter;
+
+public class Projectile implements Drawable, Ephemeral, GameObject {
     public Character originator;
     private float stateTime;
     private final Sprite sprite;
@@ -21,6 +23,8 @@ public class Projectile extends Damaging implements GameObject {
     private float rot;
     private float distanceTraveled;
     private final float maxDistance;
+    @Getter String id;
+    @Getter float amt;
 
     public Projectile(
             Character originator,
@@ -33,7 +37,8 @@ public class Projectile extends Damaging implements GameObject {
             float speed,
             float dmg,
             float maxDistance) {
-        super(name, dmg);
+        this.id = name;
+        this.amt = dmg;
         this.originator = originator;
         this.stateTime = 0;
         this.width = width;
@@ -85,27 +90,28 @@ public class Projectile extends Damaging implements GameObject {
     }
 
     @Override
-    public boolean drawSprites(float deltaTime, SpriteBatch batch) {
-        stateTime += deltaTime;
-
-        float xdist = deltaTime * speed * xmag;
-        float ydist = deltaTime * speed * ymag;
-        this.distanceTraveled =
-                this.distanceTraveled
-                        + (float) Math.sqrt((double) (xdist * xdist) + (ydist * ydist));
-
-        if (this.distanceTraveled < this.maxDistance) {
-            sprite.setX(sprite.getX() + xdist);
-            sprite.setY(sprite.getY() + ydist);
-
-            TextureRegion currFrame = animation.getKeyFrame(stateTime, true);
-            batch.draw(currFrame, sprite.getX(), sprite.getY(), 0, 0, width, height, 1, 1, rot);
-            return false;
-        }
-
-        return true;
+    public void drawSprites(float deltaTime, SpriteBatch batch) {
+        TextureRegion currFrame = animation.getKeyFrame(stateTime, true);
+        batch.draw(currFrame, sprite.getX(), sprite.getY(), 0, 0, width, height, 1, 1, rot);
     }
 
     @Override
     public void drawShapes(float deltaTime, ShapeRenderer shapeRenderer) {}
+
+    @Override
+    public boolean canCleanup() {
+        return this.distanceTraveled >= this.maxDistance;
+    }
+
+    @Override
+    public void step(float deltaTime) {
+        stateTime += deltaTime;
+        float xdist = deltaTime * speed * xmag;
+        float ydist = deltaTime * speed * ymag;
+        this.distanceTraveled = this.distanceTraveled
+            + (float) Math.sqrt((double) (xdist * xdist) + (ydist * ydist));
+        sprite.setX(sprite.getX() + xdist);
+        sprite.setY(sprite.getY() + ydist);
+
+    }
 }
