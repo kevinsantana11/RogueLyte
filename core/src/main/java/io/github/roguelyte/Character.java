@@ -7,28 +7,25 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import java.util.HashSet;
 
-public class Character extends Damageable implements Drawable, Ephemeral, GameObject {
+public class Character extends Damageable implements GO {
     Sprite sprite;
     String name;
-    float width;
-    float height;
-    float speed;
+    GOConfig config;
+    PhysicsConfig physics;
 
     public Character(
             String name,
             Texture texture,
-            float width,
-            float height,
-            float startingHealth,
-            float speed) {
+            GOConfig config,
+            PhysicsConfig physics,
+            float startingHealth) {
         super(startingHealth);
         this.name = name;
-        this.speed = speed;
-        this.width = width;
-        this.height = height;
+        this.config = config;
+        this.physics = physics;
         this.hitby = new HashSet<>();
         sprite = new Sprite(texture);
-        sprite.setSize(width, height);
+        sprite.setSize(config.getWidth(), config.getHeight());
     }
 
     public Sprite getSprite() {
@@ -37,7 +34,7 @@ public class Character extends Damageable implements Drawable, Ephemeral, GameOb
 
     @Override
     public void drawSprites(float deltaTime, SpriteBatch batch) {
-        batch.draw(sprite.getTexture(), sprite.getX(), sprite.getY(), width, height);
+        batch.draw(sprite.getTexture(), sprite.getX(), sprite.getY(), config.getWidth(), config.getHeight());
     }
 
     @Override

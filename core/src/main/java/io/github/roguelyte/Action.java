@@ -1,3 +1,5 @@
 package io.github.roguelyte;
 
-public interface Action {}
+public interface Action {
+    void apply(Game game);
+}

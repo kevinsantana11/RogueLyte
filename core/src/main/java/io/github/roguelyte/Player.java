@@ -3,51 +3,59 @@ package io.github.roguelyte;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Player extends Character {
+    Map<Integer, ProjectileFactory> skillMap;
+
     public Player(
-            Texture texture,
-            float width,
-            float height,
-            float startingHealth,
-            float speed) {
-        super("player", texture, width, height, startingHealth, speed);
+        Texture texture,
+        GOConfig config,
+        PhysicsConfig physics,
+        float startingHealth,
+        Map<Integer, ProjectileFactory> skillMap
+    ) {
+        super("player", texture, config, physics, startingHealth);
+        this.skillMap = skillMap;
     }
 
-    public List<Action> processInputs(float deltaTime) {
+    public List<Action> getActions(float deltaTime) {
         List<Action> actions = new ArrayList<>();
         float xtransform = 0;
         float ytransform = 0;
 
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            xtransform = speed * deltaTime;
+            xtransform = physics.getSpeed() * deltaTime;
         } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            xtransform = -1 * speed * deltaTime;
+            xtransform = -1 * physics.getSpeed() * deltaTime;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            ytransform = speed * deltaTime;
+            ytransform = physics.getSpeed() * deltaTime;
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            ytransform = -1 * speed * deltaTime;
+            ytransform = -1 * physics.getSpeed() * deltaTime;
         }
 
         if (xtransform != 0 || ytransform != 0) {
-            sprite.translate(xtransform, ytransform);
-            actions.add(new Move(sprite.getX(), sprite.getY()));
+            actions.add(new Translate(
+                this.getSprite(),
+                xtransform,
+                ytransform
+            ));
         }
 
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
-            Action action =
-                    new InvokeSpell(
-                            "fireball",
-                            new Vector2(
-                                    sprite.getX() + (sprite.getWidth() / 2),
-                                    sprite.getY() + (sprite.getHeight() / 2)),
-                            new Vector2(Gdx.input.getX(), Gdx.input.getY()));
-            actions.add(action);
+        for (Entry<Integer, ProjectileFactory> kv : skillMap.entrySet()) {
+            if (Gdx.input.isButtonJustPressed(kv.getKey())) {
+                actions.add(new InvokeSkill(
+                    this,
+                    kv.getValue(),
+                    Gdx.input.getX(),
+                    Gdx.input.getY()
+                ));
+            }
         }
 
         return actions;

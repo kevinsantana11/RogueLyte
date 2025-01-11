@@ -2,17 +2,19 @@ package io.github.roguelyte;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Map.Entry;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
@@ -27,29 +29,41 @@ public class Main extends ApplicationAdapter {
         batch = new SpriteBatch();
         viewport = new FitViewport(8, 5);
         txMap = Map.of(
-            "background", new Texture("terrain/L1_Grass.PNG"),
             "player", new Texture("players/battlemage.gif"),
             "demon", new Texture("players/demon.gif"),
             "fireball", new Texture("spells/Fireball.png"));
 
         shapeRenderer = new ShapeRenderer();
 
-        Player player = new Player(txMap.get("player"), 1, 1, 100, 4);
-        Character enemy = new Character("demon", txMap.get("demon"), 1, 1, 100, 4);
+        Player player = new Player(
+            txMap.get("player"),
+            new GOConfig(1, 1),
+            new PhysicsConfig(4f),
+            100,
+            Map.of(
+                Input.Buttons.RIGHT, new ProjectileFactory(
+                    "fireball",
+                    txMap.get("fireball"),
+                    viewport.getCamera(),
+                    new ProjectileConfig(50, 5),
+                    new GOConfig(1, 1),
+                    new PhysicsConfig(2f),
+                    new Random())
+            ));
+        Character enemy = new Character(
+            "demon",
+            txMap.get("demon"),
+            new GOConfig(1, 1),
+            new PhysicsConfig(4f),
+            100);
 
         List<Character> characters = new ArrayList<>();
         characters.add(player);
         characters.add(enemy);
 
-        float worldWidth = viewport.getWorldWidth();
-        float worldHeight = viewport.getWorldWidth();
+        Level level = new Level(new TmxMapLoader().load("levels/lvl_0.tmx"));
 
-        float xOrigin = 0;
-        float yOrigin = 0;
-
-        Level level = new Level(txMap.get("background"), xOrigin, yOrigin, worldWidth, worldHeight);
-
-        game = new Game(level, player, characters, new ArrayList<>(), new Random());
+        game = new Game(level, player, characters, new ArrayList<>());
 
     }
 
@@ -61,7 +75,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void render() {
         float deltaTime = Gdx.graphics.getDeltaTime();
-        game.step(deltaTime, viewport, txMap);
+        game.step(deltaTime);
 
         // Setup the camera to follow the player
         viewport.getCamera().position.set(game.getPlayer().getSprite().getX(), game.getPlayer().getSprite().getY(), 0);

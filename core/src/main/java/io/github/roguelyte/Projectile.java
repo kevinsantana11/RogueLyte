@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import lombok.Getter;
 
-public class Projectile implements Drawable, Ephemeral, GameObject {
+public class Projectile implements GO {
     public Character originator;
     private float stateTime;
     private final Sprite sprite;
