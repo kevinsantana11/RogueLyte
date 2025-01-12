@@ -1,6 +1,7 @@
 package io.github.roguelyte;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import java.lang.Math;
 
 import lombok.AllArgsConstructor;
 
@@ -12,6 +13,13 @@ public class Translate implements Action {
 
     @Override
     public void apply(Game game) {
-        sprite.translate(x, y);
+        int newX = (int) Math.ceil(sprite.getX() + x);
+        int newY = (int) Math.ceil(sprite.getY() + y);
+
+        System.out.println(String.format("Moving to: (x, y): (%s, %s)", newX, newY));
+
+        if (!game.getLevel().collides(newX, newY)) {
+            sprite.translate(x, y);
+        }
     }
 }

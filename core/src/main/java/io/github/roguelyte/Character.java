@@ -48,14 +48,14 @@ public class Character extends Damageable implements GO {
                 sprite.getX(),
                 sprite.getY() + sprite.getHeight() + 0.02f,
                 sprite.getWidth() * green,
-                .06f);
+                .6f);
         if (red > 0) {
             shapeRenderer.setColor(1, 0, 0, 1);
             shapeRenderer.rect(
                     sprite.getX() + sprite.getWidth() * green,
                     sprite.getY() + sprite.getHeight() + 0.02f,
                     sprite.getWidth() * red,
-                    .06f);
+                    .6f);
         }
         shapeRenderer.end();
     }

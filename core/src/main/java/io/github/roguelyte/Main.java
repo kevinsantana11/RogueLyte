@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -27,7 +28,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
         batch = new SpriteBatch();
-        viewport = new FitViewport(8, 5);
+        viewport = new FitViewport(400, 300);
         txMap = Map.of(
             "player", new Texture("players/battlemage.gif"),
             "demon", new Texture("players/demon.gif"),
@@ -37,23 +38,23 @@ public class Main extends ApplicationAdapter {
 
         Player player = new Player(
             txMap.get("player"),
-            new GOConfig(1, 1),
-            new PhysicsConfig(4f),
+            new GOConfig(20, 20),
+            new PhysicsConfig(200f),
             100,
             Map.of(
                 Input.Buttons.RIGHT, new ProjectileFactory(
                     "fireball",
                     txMap.get("fireball"),
                     viewport.getCamera(),
-                    new ProjectileConfig(50, 5),
-                    new GOConfig(1, 1),
-                    new PhysicsConfig(2f),
+                    new ProjectileConfig(50, 60),
+                    new GOConfig(20, 20),
+                    new PhysicsConfig(30f),
                     new Random())
             ));
         Character enemy = new Character(
             "demon",
             txMap.get("demon"),
-            new GOConfig(1, 1),
+            new GOConfig(20, 20),
             new PhysicsConfig(4f),
             100);
 
@@ -61,7 +62,12 @@ public class Main extends ApplicationAdapter {
         characters.add(player);
         characters.add(enemy);
 
-        Level level = new Level(new TmxMapLoader().load("levels/lvl_0.tmx"));
+        Level level = new Level(
+            new TmxMapLoader().load("levels/lvl_0.tmx"),
+            batch,
+            (OrthographicCamera) viewport.getCamera(),
+            16,
+            16);
 
         game = new Game(level, player, characters, new ArrayList<>());
 
@@ -85,6 +91,8 @@ public class Main extends ApplicationAdapter {
 
         // Clear the screen
         ScreenUtils.clear(Color.GRAY);
+
+        game.drawLevel(deltaTime, batch);
 
         // Draw sprites
         batch.begin();

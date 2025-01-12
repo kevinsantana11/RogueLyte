@@ -11,7 +11,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 public class Game {
-    private Level level;
+    @Getter private Level level;
     @Getter private Player player;
     private List<Character> characters;
     private List<Projectile> projectiles;
@@ -54,18 +54,14 @@ public class Game {
     }
 
     private void processInput(float deltaTime) {
-        List<Action> actions = player.getActions(deltaTime);
-        System.out.println(String.format("Got %d actions from processing inputs", actions.size()));
+        player.getActions(deltaTime).forEach((a) -> a.apply(this));
+    }
 
-        for (Action action : actions) {
-            action.apply(this);
-        }
-
+    public void drawLevel(float deltaTime, SpriteBatch batch) {
+        level.drawSprites(deltaTime, batch);
     }
 
     public void drawSprites(float deltaTime, SpriteBatch batch) {
-        // level.drawSprites(deltaTime, batch);
-
         List<GO> drawables = new ArrayList<>(characters);
         drawables.addAll(projectiles);
 
