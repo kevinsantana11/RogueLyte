@@ -29,8 +29,6 @@ public class Translate implements Action {
             newY = (int) Math.ceil(sprite.getY() + y);
         }
 
-        System.out.println(String.format("Moving to: (x, y): (%s, %s)", newX, newY));
-
         if (!game.getLevel().collides(newX, newY)) {
             sprite.translate(x, y);
         }

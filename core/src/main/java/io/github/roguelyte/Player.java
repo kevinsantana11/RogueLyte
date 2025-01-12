@@ -39,13 +39,19 @@ public class Player extends Character {
             ytransform = -1 * physics.getSpeed() * deltaTime;
         }
 
-        if (xtransform != 0 || ytransform != 0) {
-            actions.add(new Translate(
-                this.getSprite(),
-                xtransform,
-                ytransform
-            ));
+        if (xtransform != 0 && ytransform != 0) {
+            float xbound = Math.signum(xtransform) * (float) Math.sin(45) * physics.getSpeed() * deltaTime;
+            float ybound = Math.signum(ytransform) * (float) Math.cos(45) * physics.getSpeed() * deltaTime;
+
+            xtransform =  Math.abs(xbound) > Math.abs(xtransform) ? xtransform : xbound;
+            ytransform =  Math.abs(ybound) > Math.abs(ytransform) ? ytransform : ybound;
         }
+
+        actions.add(new Translate(
+            this.getSprite(),
+            xtransform,
+            ytransform
+        ));
 
         for (Entry<Integer, ProjectileFactory> kv : skillMap.entrySet()) {
             if (this.isInputJustPressed(kv.getKey())) {
