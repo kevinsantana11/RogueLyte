@@ -48,7 +48,7 @@ public class Player extends Character {
         }
 
         for (Entry<Integer, ProjectileFactory> kv : skillMap.entrySet()) {
-            if (Gdx.input.isButtonJustPressed(kv.getKey())) {
+            if (this.isInputJustPressed(kv.getKey())) {
                 actions.add(new InvokeSkill(
                     this,
                     kv.getValue(),
@@ -59,5 +59,9 @@ public class Player extends Character {
         }
 
         return actions;
+    }
+
+    private boolean isInputJustPressed(int input) {
+        return Gdx.input.isButtonJustPressed(input) || Gdx.input.isKeyJustPressed(input);
     }
 }

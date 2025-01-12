@@ -13,8 +13,21 @@ public class Translate implements Action {
 
     @Override
     public void apply(Game game) {
-        int newX = (int) Math.ceil(sprite.getX() + x);
-        int newY = (int) Math.ceil(sprite.getY() + y);
+        int newX = 0;
+        int newY = 0;
+
+        if (x > 0) {
+            newX = (int) Math.ceil(sprite.getX() + x + sprite.getWidth() / 2);
+        } else {
+            newX = (int) Math.ceil(sprite.getX() + x);
+        }
+
+        if (y > 0) {
+            newY = (int) Math.ceil(sprite.getY() + y + sprite.getHeight() / 2);
+
+        } else {
+            newY = (int) Math.ceil(sprite.getY() + y);
+        }
 
         System.out.println(String.format("Moving to: (x, y): (%s, %s)", newX, newY));
 

@@ -49,16 +49,14 @@ public class Projectile implements GO {
         this.sprite = new Sprite(texture);
         sprite.setSize(width, height);
 
-        double xdiff = end.x - start.x;
-        double ydiff = end.y - start.y;
+        float xdiff = end.x - start.x;
+        float ydiff = end.y - start.y;
         double mag = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
         xmag = mag > 0 ? (float) (xdiff / mag) : 1;
         ymag = mag > 0 ? (float) (ydiff / mag) : 1;
 
-        // sprite.setOrigin(start.x, start.y);
         sprite.setX(start.x);
         sprite.setY(start.y);
-        sprite.setOrigin(start.x + width / 2, start.y + height / 2);
 
         double ratio = ydiff / xdiff;
         double rads = Math.atan(ratio);
@@ -71,7 +69,7 @@ public class Projectile implements GO {
         } else if (xdiff < 0 && ydiff < 0) {
             rot = 180 + (float) deg;
         } else {
-            rot = -(float) deg;
+            rot = 360 - (float) deg;
         }
 
         TextureRegion[][] tmpFrames = TextureRegion.split(texture, 16, 16);
@@ -92,7 +90,18 @@ public class Projectile implements GO {
     @Override
     public void drawSprites(float deltaTime, SpriteBatch batch) {
         TextureRegion currFrame = animation.getKeyFrame(stateTime, true);
-        batch.draw(currFrame, sprite.getX(), sprite.getY(), 0, 0, width, height, 1, 1, rot);
+        // System.out.println(String.format("offsets: (%f, %f), rot: {%f}", xOffset, yOffset, rot));
+        batch.draw(
+            currFrame,
+            sprite.getX(),
+            sprite.getY(),
+            sprite.getWidth() / 2,
+            sprite.getHeight() / 2,
+            width,
+            height,
+            1,
+            1,
+            rot);
     }
 
     @Override

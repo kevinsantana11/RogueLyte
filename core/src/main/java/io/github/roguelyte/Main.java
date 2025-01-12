@@ -42,13 +42,13 @@ public class Main extends ApplicationAdapter {
             new PhysicsConfig(200f),
             100,
             Map.of(
-                Input.Buttons.RIGHT, new ProjectileFactory(
+                Input.Keys.Q, new ProjectileFactory(
                     "fireball",
                     txMap.get("fireball"),
                     viewport.getCamera(),
                     new ProjectileConfig(50, 60),
                     new GOConfig(20, 20),
-                    new PhysicsConfig(30f),
+                    new PhysicsConfig(64f),
                     new Random())
             ));
         Character enemy = new Character(

@@ -71,7 +71,10 @@ public class Game {
     }
 
     public void drawShapes(float deltaTime, ShapeRenderer shapeRenderer) {
-        for (GO drawable : characters) {
+        List<GO> drawables = new ArrayList<>(characters);
+        drawables.addAll(projectiles);
+        drawables.addAll(characters);
+        for (GO drawable : drawables) {
             drawable.drawShapes(deltaTime, shapeRenderer);
         }
     }

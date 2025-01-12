@@ -29,7 +29,13 @@ public class ProjectileFactory {
      */
     public Projectile createFromScreenCoords(Character originator, int screenX, int screenY) {
         Vector3 worldCoords = camera.unproject(new Vector3(screenX, screenY, 0));
-        Vector2 start = new Vector2(originator.getSprite().getX(), originator.getSprite().getY());
+        float startx  = originator.getSprite().getX() 
+            + (originator.getSprite().getWidth() / 2 
+            - (config.getWidth() / 2));
+        float starty  = originator.getSprite().getY() 
+            + (originator.getSprite().getHeight() / 2 
+            - (config.getHeight() / 2));
+        Vector2 start = new Vector2(startx, starty);
         Vector2 end = new Vector2(worldCoords.x, worldCoords.y);
         
         return new Projectile(
