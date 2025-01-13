@@ -1,8 +1,16 @@
-package io.github.roguelyte;
+package io.github.roguelyte.actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+
+import io.github.roguelyte.actions.Action;
+import io.github.roguelyte.actions.InvokeSkill;
+import io.github.roguelyte.actions.Translate;
+import io.github.roguelyte.configs.GOConfig;
+import io.github.roguelyte.configs.PhysicsConfig;
+import io.github.roguelyte.core.ProjectileFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +30,8 @@ public class Player extends Character {
         this.skillMap = skillMap;
     }
 
-    public List<Action> getActions(float deltaTime) {
+    @Override
+    public List<Action> act(float deltaTime) {
         List<Action> actions = new ArrayList<>();
         float xtransform = 0;
         float ytransform = 0;

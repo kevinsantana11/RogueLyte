@@ -11,6 +11,16 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+
+import io.github.roguelyte.actors.Character;
+import io.github.roguelyte.actors.Player;
+import io.github.roguelyte.core.Level;
+import io.github.roguelyte.core.ProjectileFactory;
+import io.github.roguelyte.core.Spawner;
+import io.github.roguelyte.configs.GOConfig;
+import io.github.roguelyte.configs.PhysicsConfig;
+import io.github.roguelyte.configs.ProjectileConfig;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +48,7 @@ public class Main extends ApplicationAdapter {
 
         Player player = new Player(
             txMap.get("player"),
-            new GOConfig(20, 20),
+            new GOConfig(20, 20, 0, 0),
             new PhysicsConfig(200f),
             100,
             Map.of(
@@ -47,27 +57,28 @@ public class Main extends ApplicationAdapter {
                     txMap.get("fireball"),
                     viewport.getCamera(),
                     new ProjectileConfig(50, 60),
-                    new GOConfig(20, 20),
+                    new GOConfig(20, 20, 0, 0),
                     new PhysicsConfig(64f),
                     new Random())
             ));
-        Character enemy = new Character(
-            "demon",
-            txMap.get("demon"),
-            new GOConfig(20, 20),
-            new PhysicsConfig(4f),
-            100);
-
         List<Character> characters = new ArrayList<>();
         characters.add(player);
-        characters.add(enemy);
 
         Level level = new Level(
             new TmxMapLoader().load("levels/lvl_0.tmx"),
             batch,
             (OrthographicCamera) viewport.getCamera(),
             16,
-            16);
+            16,
+            new Spawner(
+                "demon",
+                txMap.get("demon"),
+                new GOConfig(20, 20, 0, 0),
+                new PhysicsConfig(64f),
+                100,
+                new Random(),
+                0,
+                1f));
 
         game = new Game(level, player, characters, new ArrayList<>());
 

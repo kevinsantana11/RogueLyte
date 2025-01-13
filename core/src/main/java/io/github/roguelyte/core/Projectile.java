@@ -1,4 +1,4 @@
-package io.github.roguelyte;
+package io.github.roguelyte.core;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -8,55 +8,54 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
+import io.github.roguelyte.configs.GOConfig;
+import io.github.roguelyte.configs.PhysicsConfig;
+import io.github.roguelyte.configs.ProjectileConfig;
+import io.github.roguelyte.actors.Character;
 import lombok.Getter;
 
 public class Projectile implements GO {
-    public Character originator;
+    @Getter private Character originator;
     private float stateTime;
     private final Sprite sprite;
     private final Animation<TextureRegion> animation;
-    private final float width;
-    private final float height;
-    private final float speed;
+    private GOConfig config;
+    private PhysicsConfig physics;
+    @Getter private ProjectileConfig projectileConfig;
+    @Getter private String id;
     private final float xmag;
     private final float ymag;
     private float rot;
     private float distanceTraveled;
-    private final float maxDistance;
-    @Getter String id;
-    @Getter float amt;
 
     public Projectile(
-            Character originator,
-            String name,
-            Texture texture,
-            float width,
-            float height,
-            Vector2 start,
-            Vector2 end,
-            float speed,
-            float dmg,
-            float maxDistance) {
+        Character originator,
+        String name,
+        Texture texture,
+        GOConfig config,
+        PhysicsConfig physics,
+        ProjectileConfig projectileConfig,
+        Vector2 end
+    ) {
         this.id = name;
-        this.amt = dmg;
         this.originator = originator;
         this.stateTime = 0;
-        this.width = width;
-        this.height = height;
-        this.speed = speed;
-        this.maxDistance = maxDistance;
         this.distanceTraveled = 0;
-        this.sprite = new Sprite(texture);
-        sprite.setSize(width, height);
+        this.config = config;
+        this.physics = physics;
+        this.projectileConfig = projectileConfig;
 
-        float xdiff = end.x - start.x;
-        float ydiff = end.y - start.y;
+        this.sprite = new Sprite(texture);
+        sprite.setSize(this.config.getWidth(), this.config.getHeight());
+
+        float xdiff = end.x - this.config.getX();
+        float ydiff = end.y - this.config.getY();
         double mag = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
         xmag = mag > 0 ? (float) (xdiff / mag) : 1;
         ymag = mag > 0 ? (float) (ydiff / mag) : 1;
 
-        sprite.setX(start.x);
-        sprite.setY(start.y);
+        sprite.setX(this.config.getX());
+        sprite.setY(this.config.getY());
 
         double ratio = ydiff / xdiff;
         double rads = Math.atan(ratio);
@@ -97,8 +96,8 @@ public class Projectile implements GO {
             sprite.getY(),
             sprite.getWidth() / 2,
             sprite.getHeight() / 2,
-            width,
-            height,
+            sprite.getWidth(),
+            sprite.getHeight(),
             1,
             1,
             rot);
@@ -109,14 +108,14 @@ public class Projectile implements GO {
 
     @Override
     public boolean canCleanup() {
-        return this.distanceTraveled >= this.maxDistance;
+        return this.distanceTraveled >= this.projectileConfig.getMaxDistance();
     }
 
     @Override
     public void step(float deltaTime) {
         stateTime += deltaTime;
-        float xdist = deltaTime * speed * xmag;
-        float ydist = deltaTime * speed * ymag;
+        float xdist = deltaTime * this.physics.getSpeed() * xmag;
+        float ydist = deltaTime * this.physics.getSpeed() * ymag;
         this.distanceTraveled = this.distanceTraveled
             + (float) Math.sqrt((double) (xdist * xdist) + (ydist * ydist));
         sprite.setX(sprite.getX() + xdist);

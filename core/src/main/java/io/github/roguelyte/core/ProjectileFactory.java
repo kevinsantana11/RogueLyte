@@ -1,4 +1,4 @@
-package io.github.roguelyte;
+package io.github.roguelyte.core;
 
 import com.badlogic.gdx.graphics.Texture;
 
@@ -8,6 +8,10 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
+import io.github.roguelyte.configs.GOConfig;
+import io.github.roguelyte.configs.PhysicsConfig;
+import io.github.roguelyte.configs.ProjectileConfig;
+import io.github.roguelyte.actors.Character;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -15,7 +19,7 @@ public class ProjectileFactory {
     private final String spellName;
     private final Texture texture;
     private final Camera camera;
-    private final ProjectileConfig projConfig;
+    private final ProjectileConfig projectileConfig;
     private final GOConfig config;
     private final PhysicsConfig physics;
     private final Random rand;
@@ -42,13 +46,9 @@ public class ProjectileFactory {
             originator,
             String.format("%s-%d", spellName, rand.nextInt()),
             texture,
-            config.getWidth(),
-            config.getHeight(),
-            start,
-            end,
-            physics.getSpeed(),
-            projConfig.getDamage(),
-            projConfig.getMaxDistance()
-        );
+            new GOConfig(config.getWidth(), config.getHeight(), start.x, start.y),
+            physics,
+            projectileConfig,
+            end);
     }
 }

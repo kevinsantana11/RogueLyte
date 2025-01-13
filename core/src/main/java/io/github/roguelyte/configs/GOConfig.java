@@ -1,4 +1,4 @@
-package io.github.roguelyte;
+package io.github.roguelyte.configs;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,4 +8,6 @@ import lombok.Getter;
 public class GOConfig {
     private final float width;
     private final float height;
+    private final float x;
+    private final float y;
 }

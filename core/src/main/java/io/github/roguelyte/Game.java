@@ -6,6 +6,11 @@ import java.util.List;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
+import io.github.roguelyte.actors.Character;
+import io.github.roguelyte.actors.Player;
+import io.github.roguelyte.core.Level;
+import io.github.roguelyte.core.Projectile;
+import io.github.roguelyte.core.GO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -13,16 +18,20 @@ import lombok.Getter;
 public class Game {
     @Getter private Level level;
     @Getter private Player player;
-    private List<Character> characters;
+    @Getter private List<Character> characters;
     private List<Projectile> projectiles;
 
     public void step(float deltaTime) {
-        processInput(deltaTime);
+        processActions(deltaTime);
         sim(deltaTime);
     }
 
     public void addProjectile(Projectile proj) {
         projectiles.add(proj);
+    }
+
+    public void addCharacater(Character character) {
+        characters.add(character);
     }
 
     private void sim(float deltaTime) {
@@ -33,8 +42,8 @@ public class Game {
                 float x = proj.getSprite().getX();
                 float y = proj.getSprite().getY();
                 if (character.getSprite().getBoundingRectangle().contains(x, y)
-                        && !character.equals(proj.originator)) {
-                    character.hit(proj.getAmt(), proj.getId());
+                        && !character.equals(proj.getOriginator())) {
+                    character.hit(proj.getProjectileConfig().getDamage(), proj.getId());
                 }
             }
 
@@ -53,8 +62,9 @@ public class Game {
         characters.removeAll(cleanupList);
     }
 
-    private void processInput(float deltaTime) {
-        player.getActions(deltaTime).forEach((a) -> a.apply(this));
+    private void processActions(float deltaTime) {
+        level.spawn(deltaTime).forEach((a) -> a.apply(this));
+        player.act(deltaTime).forEach((a) -> a.apply(this));
     }
 
     public void drawLevel(float deltaTime, SpriteBatch batch) {

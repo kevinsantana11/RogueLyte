@@ -1,4 +1,4 @@
-package io.github.roguelyte;
+package io.github.roguelyte.configs;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

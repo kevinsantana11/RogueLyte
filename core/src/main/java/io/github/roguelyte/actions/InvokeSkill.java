@@ -1,5 +1,8 @@
-package io.github.roguelyte;
+package io.github.roguelyte.actions;
 
+import io.github.roguelyte.Game;
+import io.github.roguelyte.core.ProjectileFactory;
+import io.github.roguelyte.actors.Character;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
