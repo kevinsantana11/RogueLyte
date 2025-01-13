@@ -2,7 +2,6 @@ package io.github.roguelyte.core;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import lombok.Getter;
 
 public abstract class Damageable {

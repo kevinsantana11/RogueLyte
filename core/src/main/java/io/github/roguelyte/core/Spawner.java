@@ -1,12 +1,10 @@
 package io.github.roguelyte.core;
 
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.Texture;
-
+import io.github.roguelyte.actors.Character;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
-import io.github.roguelyte.actors.Character;
+import java.util.Random;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -28,14 +26,14 @@ public class Spawner {
         int pos = rand.nextInt(0, 999);
         Character character = null;
         if (pos >= 899 && stateTime % spawnInterval < 0.01f) {
-            character = new Character(
-                this.enemyName,
-                this.texture,
-                new GOConfig(config.getWidth(), config.getHeight(), x, y),
-                physics,
-                startingHealth);
-        } 
+            character =
+                    new Character(
+                            this.enemyName,
+                            this.texture,
+                            new GOConfig(config.getWidth(), config.getHeight(), x, y),
+                            physics,
+                            startingHealth);
+        }
         return character;
     }
-    
 }

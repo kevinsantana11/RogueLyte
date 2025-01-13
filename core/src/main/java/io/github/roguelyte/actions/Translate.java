@@ -1,11 +1,7 @@
 package io.github.roguelyte.actions;
 
 import com.badlogic.gdx.graphics.g2d.Sprite;
-
 import io.github.roguelyte.Game;
-
-import java.lang.Math;
-
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor

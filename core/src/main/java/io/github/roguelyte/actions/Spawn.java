@@ -10,10 +10,9 @@ public class Spawn implements Action {
 
     @Override
     public void apply(Game game) {
-        for(Character inGameCharacter : game.getCharacters()) {
-            if (character.getSprite().getX() == inGameCharacter.getSprite().getX() 
-                && character.getSprite().getY() == inGameCharacter.getSprite().getY()
-            ) {
+        for (Character inGameCharacter : game.getCharacters()) {
+            if (character.getSprite().getX() == inGameCharacter.getSprite().getX()
+                    && character.getSprite().getY() == inGameCharacter.getSprite().getY()) {
                 System.out.println("Cant spawn, enemy already present here");
                 return;
             }
@@ -21,5 +20,4 @@ public class Spawn implements Action {
 
         game.addCharacater(character);
     }
-    
 }

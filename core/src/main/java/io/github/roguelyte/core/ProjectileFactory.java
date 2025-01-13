@@ -1,17 +1,14 @@
 package io.github.roguelyte.core;
 
-import com.badlogic.gdx.graphics.Texture;
-
-import java.util.Random;
-
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-
+import io.github.roguelyte.actors.Character;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
 import io.github.roguelyte.configs.ProjectileConfig;
-import io.github.roguelyte.actors.Character;
+import java.util.Random;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -33,22 +30,22 @@ public class ProjectileFactory {
      */
     public Projectile createFromScreenCoords(Character originator, int screenX, int screenY) {
         Vector3 worldCoords = camera.unproject(new Vector3(screenX, screenY, 0));
-        float startx  = originator.getSprite().getX() 
-            + (originator.getSprite().getWidth() / 2 
-            - (config.getWidth() / 2));
-        float starty  = originator.getSprite().getY() 
-            + (originator.getSprite().getHeight() / 2 
-            - (config.getHeight() / 2));
+        float startx =
+                originator.getSprite().getX()
+                        + (originator.getSprite().getWidth() / 2 - (config.getWidth() / 2));
+        float starty =
+                originator.getSprite().getY()
+                        + (originator.getSprite().getHeight() / 2 - (config.getHeight() / 2));
         Vector2 start = new Vector2(startx, starty);
         Vector2 end = new Vector2(worldCoords.x, worldCoords.y);
-        
+
         return new Projectile(
-            originator,
-            String.format("%s-%d", spellName, rand.nextInt()),
-            texture,
-            new GOConfig(config.getWidth(), config.getHeight(), start.x, start.y),
-            physics,
-            projectileConfig,
-            end);
+                originator,
+                String.format("%s-%d", spellName, rand.nextInt()),
+                texture,
+                new GOConfig(config.getWidth(), config.getHeight(), start.x, start.y),
+                physics,
+                projectileConfig,
+                end);
     }
 }

@@ -1,8 +1,5 @@
 package io.github.roguelyte.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -11,10 +8,11 @@ import com.badlogic.gdx.maps.objects.EllipseMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-
 import io.github.roguelyte.actions.Action;
 import io.github.roguelyte.actions.Spawn;
 import io.github.roguelyte.actors.Character;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Level implements GO {
     private OrthogonalTiledMapRenderer renderer;
@@ -24,7 +22,13 @@ public class Level implements GO {
     private int tileHeight;
     private Spawner spawner;
 
-    public Level(TiledMap map, SpriteBatch batch, OrthographicCamera camera, int tileWidth, int tileHeight, Spawner spawner) {
+    public Level(
+            TiledMap map,
+            SpriteBatch batch,
+            OrthographicCamera camera,
+            int tileWidth,
+            int tileHeight,
+            Spawner spawner) {
         renderer = new OrthogonalTiledMapRenderer(map, batch);
         this.camera = camera;
         this.map = map;
@@ -59,7 +63,6 @@ public class Level implements GO {
         return false;
     }
 
-
     @Override
     public void drawSprites(float deltaTime, SpriteBatch batch) {
         renderer.setView(camera);
@@ -67,7 +70,7 @@ public class Level implements GO {
     }
 
     @Override
-    public void drawShapes(float deltaTime, ShapeRenderer shapeRenderer) { }
+    public void drawShapes(float deltaTime, ShapeRenderer shapeRenderer) {}
 
     @Override
     public boolean canCleanup() {

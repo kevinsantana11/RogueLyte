@@ -4,13 +4,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-
-import io.github.roguelyte.core.Damageable;
-import io.github.roguelyte.core.GO;
 import io.github.roguelyte.actions.Action;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
-
+import io.github.roguelyte.core.Damageable;
+import io.github.roguelyte.core.GO;
 import java.util.List;
 
 public class Character extends Damageable implements GO, Actor {
@@ -40,7 +38,12 @@ public class Character extends Damageable implements GO, Actor {
 
     @Override
     public void drawSprites(float deltaTime, SpriteBatch batch) {
-        batch.draw(sprite.getTexture(), sprite.getX(), sprite.getY(), config.getWidth(), config.getHeight());
+        batch.draw(
+                sprite.getTexture(),
+                sprite.getX(),
+                sprite.getY(),
+                config.getWidth(),
+                config.getHeight());
     }
 
     @Override

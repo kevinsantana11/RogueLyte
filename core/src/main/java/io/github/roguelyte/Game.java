@@ -1,16 +1,14 @@
 package io.github.roguelyte;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-
 import io.github.roguelyte.actors.Character;
 import io.github.roguelyte.actors.Player;
+import io.github.roguelyte.core.GO;
 import io.github.roguelyte.core.Level;
 import io.github.roguelyte.core.Projectile;
-import io.github.roguelyte.core.GO;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

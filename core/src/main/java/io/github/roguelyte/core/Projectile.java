@@ -7,11 +7,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-
+import io.github.roguelyte.actors.Character;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
 import io.github.roguelyte.configs.ProjectileConfig;
-import io.github.roguelyte.actors.Character;
 import lombok.Getter;
 
 public class Projectile implements GO {
@@ -29,14 +28,13 @@ public class Projectile implements GO {
     private float distanceTraveled;
 
     public Projectile(
-        Character originator,
-        String name,
-        Texture texture,
-        GOConfig config,
-        PhysicsConfig physics,
-        ProjectileConfig projectileConfig,
-        Vector2 end
-    ) {
+            Character originator,
+            String name,
+            Texture texture,
+            GOConfig config,
+            PhysicsConfig physics,
+            ProjectileConfig projectileConfig,
+            Vector2 end) {
         this.id = name;
         this.originator = originator;
         this.stateTime = 0;
@@ -91,16 +89,16 @@ public class Projectile implements GO {
         TextureRegion currFrame = animation.getKeyFrame(stateTime, true);
         // System.out.println(String.format("offsets: (%f, %f), rot: {%f}", xOffset, yOffset, rot));
         batch.draw(
-            currFrame,
-            sprite.getX(),
-            sprite.getY(),
-            sprite.getWidth() / 2,
-            sprite.getHeight() / 2,
-            sprite.getWidth(),
-            sprite.getHeight(),
-            1,
-            1,
-            rot);
+                currFrame,
+                sprite.getX(),
+                sprite.getY(),
+                sprite.getWidth() / 2,
+                sprite.getHeight() / 2,
+                sprite.getWidth(),
+                sprite.getHeight(),
+                1,
+                1,
+                rot);
     }
 
     @Override
@@ -116,10 +114,10 @@ public class Projectile implements GO {
         stateTime += deltaTime;
         float xdist = deltaTime * this.physics.getSpeed() * xmag;
         float ydist = deltaTime * this.physics.getSpeed() * ymag;
-        this.distanceTraveled = this.distanceTraveled
-            + (float) Math.sqrt((double) (xdist * xdist) + (ydist * ydist));
+        this.distanceTraveled =
+                this.distanceTraveled
+                        + (float) Math.sqrt((double) (xdist * xdist) + (ydist * ydist));
         sprite.setX(sprite.getX() + xdist);
         sprite.setY(sprite.getY() + ydist);
-
     }
 }
