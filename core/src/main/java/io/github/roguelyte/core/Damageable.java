@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 
-public abstract class Damageable {
+public class Damageable {
     @Getter private float health;
     @Getter private float maxHealth;
     Set<String> hitby;

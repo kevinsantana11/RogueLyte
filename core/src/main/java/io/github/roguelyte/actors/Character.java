@@ -4,18 +4,17 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import io.github.roguelyte.actions.Action;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
 import io.github.roguelyte.core.Damageable;
 import io.github.roguelyte.core.GO;
-import java.util.List;
 
-public class Character extends Damageable implements GO, Actor {
+public abstract class Character implements GO, Actor {
     Sprite sprite;
     String name;
     GOConfig config;
     PhysicsConfig physics;
+    Damageable healthbar;
 
     public Character(
             String name,
@@ -23,10 +22,10 @@ public class Character extends Damageable implements GO, Actor {
             GOConfig config,
             PhysicsConfig physics,
             float startingHealth) {
-        super(startingHealth);
         this.name = name;
         this.config = config;
         this.physics = physics;
+        this.healthbar = new Damageable(startingHealth);
         sprite = new Sprite(texture);
         sprite.setPosition(config.getX(), config.getY());
         sprite.setSize(config.getWidth(), config.getHeight());
@@ -34,6 +33,18 @@ public class Character extends Damageable implements GO, Actor {
 
     public Sprite getSprite() {
         return sprite;
+    }
+
+    public PhysicsConfig getPhysicsConfig() {
+        return this.physics;
+    }
+
+    public void hit(float amt, String id) {
+        this.healthbar.hit(amt, id);
+    }
+
+    public void heal(float amt, String id) {
+        this.healthbar.heal(amt);
     }
 
     @Override
@@ -50,7 +61,7 @@ public class Character extends Damageable implements GO, Actor {
     public void drawShapes(float deltaTime, ShapeRenderer shapeRenderer) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(1, 0, 0, 1);
-        float green = getHealth() / getMaxHealth();
+        float green = healthbar.getHealth() / healthbar.getMaxHealth();
         float red = 1 - green;
         shapeRenderer.setColor(0, 1, 0, 1);
         shapeRenderer.rect(
@@ -71,15 +82,9 @@ public class Character extends Damageable implements GO, Actor {
 
     @Override
     public boolean canCleanup() {
-        return this.getHealth() == 0;
+        return this.healthbar.getHealth() == 0;
     }
 
     @Override
     public void step(float deltaTime) {}
-
-    @Override
-    public List<Action> act(float deltaTime) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'act'");
-    }
 }
