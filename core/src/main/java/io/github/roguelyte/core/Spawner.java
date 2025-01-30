@@ -1,6 +1,8 @@
 package io.github.roguelyte.core;
 
 import com.badlogic.gdx.graphics.Texture;
+
+import io.github.roguelyte.actors.AI;
 import io.github.roguelyte.actors.Character;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
@@ -18,16 +20,35 @@ public class Spawner {
     private float stateTime;
     private float spawnInterval;
 
+    public Spawner(
+        String enemyName,
+        Texture texture,
+        GOConfig config,
+        PhysicsConfig physics,
+        float startingHealth,
+        Random rand,
+        float spawnInterval) {
+            this.enemyName = enemyName;
+            this.texture = texture;
+            this.config = config;
+            this.physics = physics;
+            this.startingHealth = startingHealth;
+            this.rand = rand;
+            this.spawnInterval = spawnInterval;
+            this.stateTime = 0;
+
+    }
+
     public void tick(float deltaTime) {
         this.stateTime += deltaTime;
     }
 
     public Character trySpawn(float x, float y) {
-        int pos = rand.nextInt(0, 999);
+        int pos = rand.nextInt(0, 99);
         Character character = null;
-        if (pos >= 899 && stateTime % spawnInterval < 0.01f) {
+        if (pos > 89 && stateTime % spawnInterval < 0.01f) {
             character =
-                    new Character(
+                    new AI(
                             this.enemyName,
                             this.texture,
                             new GOConfig(config.getWidth(), config.getHeight(), x, y),

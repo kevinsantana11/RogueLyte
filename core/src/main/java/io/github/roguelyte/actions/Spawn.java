@@ -18,6 +18,7 @@ public class Spawn implements Action {
             }
         }
 
+        System.out.println("Spawning an character");
         game.addCharacater(character);
     }
 }

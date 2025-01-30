@@ -78,7 +78,6 @@ public class Main extends ApplicationAdapter {
                                 new PhysicsConfig(64f),
                                 100,
                                 new Random(),
-                                0,
                                 1f));
 
         game = new Game(level, player, characters, new ArrayList<>());
