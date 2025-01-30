@@ -62,7 +62,10 @@ public class Game {
 
     private void processActions(float deltaTime) {
         level.spawn(deltaTime).forEach((a) -> a.apply(this));
-        player.act(deltaTime).forEach((a) -> a.apply(this));
+        
+        for (Character character : characters) {
+            character.act(deltaTime).forEach((a) -> a.apply(this));
+        }
     }
 
     public void drawLevel(float deltaTime, SpriteBatch batch) {
