@@ -49,7 +49,7 @@ public class Main extends ApplicationAdapter {
                 new Player(
                         txMap.get("player"),
                         new GOConfig(20, 20, 0, 0),
-                        new PhysicsConfig(200f),
+                        new PhysicsConfig(2f),
                         100,
                         Map.of(
                                 Input.Keys.Q,
@@ -59,7 +59,7 @@ public class Main extends ApplicationAdapter {
                                         viewport.getCamera(),
                                         new ProjectileConfig(50, 60),
                                         new GOConfig(20, 20, 0, 0),
-                                        new PhysicsConfig(64f),
+                                        new PhysicsConfig(60f),
                                         new Random())));
         List<Character> characters = new ArrayList<>();
         characters.add(player);
@@ -75,7 +75,7 @@ public class Main extends ApplicationAdapter {
                                 "demon",
                                 txMap.get("demon"),
                                 new GOConfig(20, 20, 0, 0),
-                                new PhysicsConfig(64f),
+                                new PhysicsConfig(2f),
                                 100,
                                 new Random(),
                                 1f));
