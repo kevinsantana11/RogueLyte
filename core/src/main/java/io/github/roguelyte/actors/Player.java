@@ -3,6 +3,8 @@ package io.github.roguelyte.actors;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Vector2;
+
 import io.github.roguelyte.actions.Action;
 import io.github.roguelyte.actions.InvokeSkill;
 import io.github.roguelyte.actions.Translate;
@@ -34,28 +36,26 @@ public class Player extends Character {
         float ytransform = 0;
 
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            xtransform = physics.getSpeed() * deltaTime;
+            xtransform = 1;
         } else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            xtransform = -1 * physics.getSpeed() * deltaTime;
+            xtransform = -1;
         }
 
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            ytransform = physics.getSpeed() * deltaTime;
+            ytransform = 1;
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            ytransform = -1 * physics.getSpeed() * deltaTime;
+            ytransform = -1;
         }
 
-        if (xtransform != 0 && ytransform != 0) {
-            float xbound =
-                    Math.signum(xtransform) * (float) Math.sin(45) * physics.getSpeed() * deltaTime;
-            float ybound =
-                    Math.signum(ytransform) * (float) Math.cos(45) * physics.getSpeed() * deltaTime;
+        Vector2 transform = new Vector2(xtransform, ytransform);
+        double ang = transform.angleRad();
+        float dx = (float) Math.cos(ang) * this.physics.getSpeed();
+        float dy = (float) Math.sin(ang) * this.physics.getSpeed();
 
-            xtransform = Math.abs(xbound) > Math.abs(xtransform) ? xtransform : xbound;
-            ytransform = Math.abs(ybound) > Math.abs(ytransform) ? ytransform : ybound;
+
+        if (xtransform != 0 || ytransform != 0) {
+            actions.add(new Translate(this.getSprite(), dx, dy));
         }
-
-        actions.add(new Translate(this.getSprite(), xtransform, ytransform));
 
         for (Entry<Integer, ProjectileFactory> kv : skillMap.entrySet()) {
             if (this.isInputJustPressed(kv.getKey())) {
