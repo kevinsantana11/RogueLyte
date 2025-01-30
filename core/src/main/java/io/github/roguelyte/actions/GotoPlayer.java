@@ -5,10 +5,10 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.roguelyte.Game;
 import io.github.roguelyte.actors.Character;
 
-public class Goto extends Translate {
+public class GotoPlayer extends Translate {
     Character character;
 
-    public Goto(Character character) {
+    public GotoPlayer(Character character) {
         super(character.getSprite(), 
             character.getSprite().getX(),
             character.getSprite().getY());

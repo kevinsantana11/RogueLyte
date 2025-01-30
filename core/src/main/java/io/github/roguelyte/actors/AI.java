@@ -6,7 +6,7 @@ import java.util.List;
 import com.badlogic.gdx.graphics.Texture;
 
 import io.github.roguelyte.actions.Action;
-import io.github.roguelyte.actions.Goto;
+import io.github.roguelyte.actions.GotoPlayer;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
 
@@ -23,7 +23,7 @@ public class AI extends Character {
     @Override
     public List<Action> act(float deltaTime) {
         ArrayList<Action> accs = new ArrayList<>();
-        accs.add(new Goto(this));
+        accs.add(new GotoPlayer(this));
         return accs;
     }
     
