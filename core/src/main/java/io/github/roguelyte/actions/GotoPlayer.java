@@ -1,5 +1,8 @@
 package io.github.roguelyte.actions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.badlogic.gdx.math.Vector2;
 
 import io.github.roguelyte.Game;
@@ -17,21 +20,41 @@ public class GotoPlayer extends Translate {
 
     @Override
     public void apply(Game game) {
-        Vector2 playerTileCoords =  new Vector2(
+        List<Float> possibleMoves = List.of(0f, 45f, 90f, 135f, 180f, 225f, 270f, 315f);
+
+        List<Float> distArray = new ArrayList<>(possibleMoves.size());
+        Float lowestDistance = Float.MAX_VALUE;
+        Vector2 bestMove = null;
+
+        for (Float move : possibleMoves) {
+            float translateX = (float) Math.cos(Math.toRadians(move)) * character.getPhysicsConfig().getSpeed();
+            float translateY = (float) Math.sin(Math.toRadians(move)) * character.getPhysicsConfig().getSpeed();
+            float newX = character.getSprite().getX() + translateX;
+            float newY = character.getSprite().getY() + translateY;
+            float distance;
+
+            if (collides(game, newX, newY)) {
+                distance = Float.MAX_VALUE;
+                distArray.add(Float.MAX_VALUE);
+            } else {
+                distance = Vector2.dst(newX,
+                    newY,
                     game.getPlayer().getSprite().getX(),
                     game.getPlayer().getSprite().getY());
-        Vector2 characterTileCoords = new Vector2(
-            character.getSprite().getX(),
-            character.getSprite().getY());
+            }
 
-        Vector2 hyp = playerTileCoords.sub(characterTileCoords);
-        double ang = (double) hyp.angleRad();
-        float xmag = (float) Math.cos(ang) * character.getPhysicsConfig().getSpeed();
-        float ymag = (float) Math.sin(ang) * character.getPhysicsConfig().getSpeed();
+            if (distance < lowestDistance) {
+                bestMove = new Vector2(translateX, translateY);
+                lowestDistance = distance;
+            }
+            distArray.add(distance);
+        }
 
-        super.x = xmag;
-        super.y = ymag;
-        super.apply(game);
+        if (bestMove != null) {
+            super.x = bestMove.x;
+            super.y = bestMove.y;
+            super.apply(game);
+        }
     }
     
 }

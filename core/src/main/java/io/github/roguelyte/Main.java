@@ -59,7 +59,7 @@ public class Main extends ApplicationAdapter {
                                         viewport.getCamera(),
                                         new ProjectileConfig(50, 60),
                                         new GOConfig(20, 20, 0, 0),
-                                        new PhysicsConfig(60f),
+                                        new PhysicsConfig(80f),
                                         new Random())));
         List<Character> characters = new ArrayList<>();
         characters.add(player);
@@ -75,7 +75,7 @@ public class Main extends ApplicationAdapter {
                                 "demon",
                                 txMap.get("demon"),
                                 new GOConfig(20, 20, 0, 0),
-                                new PhysicsConfig(2f),
+                                new PhysicsConfig(1f),
                                 100,
                                 new Random(),
                                 1f));
