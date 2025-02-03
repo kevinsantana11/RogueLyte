@@ -2,26 +2,59 @@ package io.github.roguelyte;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
+
+import io.github.roguelyte.actions.Action;
+import io.github.roguelyte.actions.Spawn;
+import io.github.roguelyte.actors.Actor;
 import io.github.roguelyte.actors.Character;
+import io.github.roguelyte.actors.AcquirableItem;
 import io.github.roguelyte.actors.Player;
 import io.github.roguelyte.core.GO;
 import io.github.roguelyte.core.Level;
 import io.github.roguelyte.core.Projectile;
+import io.github.roguelyte.core.Spawner;
+
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import static io.github.roguelyte.utils.Utility.spritesOverlaping;
 
 @AllArgsConstructor
 public class Game {
     @Getter private Level level;
     @Getter private Player player;
     @Getter private List<Character> characters;
+    @Getter private List<AcquirableItem> items;
     private List<Projectile> projectiles;
+    private Spawner<Character> spawner;
 
-    public void step(float deltaTime) {
-        processActions(deltaTime);
-        sim(deltaTime);
+    public List<Action> getActions(float deltaTime) {
+        List<Action> actions = new ArrayList<>();
+        getActors().forEach((actor) -> { actions.addAll(actor.act(deltaTime)); });
+        List<Action> spawnActions = spawn(deltaTime);
+        actions.addAll(spawnActions);
+        return actions;
+    }
+
+   public void process(float deltaTime, List<Action> actions) {
+        actions.forEach((action) -> action.apply(this));
+        checkInteractions(deltaTime);
+        cleanup();
+    }
+
+    public List<Actor> getActors() {
+        List<Actor> actors = new ArrayList<>();
+        actors.addAll(characters);
+        actors.addAll(projectiles);
+        actors.addAll(items);
+        return actors;
+    }
+
+    public void addItem(AcquirableItem item) {
+        items.add(item);
     }
 
     public void addProjectile(Projectile proj) {
@@ -32,19 +65,42 @@ public class Game {
         characters.add(character);
     }
 
-    private void sim(float deltaTime) {
-        List<GO> cleanupList = new ArrayList<>();
+    public List<Action> spawn(float deltaTime) {
+        List<Action> actions = new ArrayList<>();
+        spawner.tick(deltaTime);
+        List<Vector2> spawnPoints = level.getSpawnPoints();
+
+        for (Vector2 spawnPoint : spawnPoints) {
+            Spawn<Character> spawnChar = spawner.trySpawn(spawnPoint.x, spawnPoint.y);
+            if ((spawnChar = spawner.trySpawn(spawnPoint.x, spawnPoint.y)) != null) {
+                actions.add(spawnChar);
+            }
+        }
+        return actions;
+    }
+
+    private void checkInteractions(float deltaTime) {
         for (Projectile proj : projectiles) {
-            proj.step(deltaTime);
             for (Character character : characters) {
-                float x = proj.getSprite().getX();
-                float y = proj.getSprite().getY();
-                if (character.getSprite().getBoundingRectangle().contains(x, y)
-                        && !character.equals(proj.getOriginator())) {
+                if (spritesOverlaping(character, proj) && character != player) {
                     character.hit(proj.getProjectileConfig().getDamage(), proj.getId());
                 }
             }
+        }
+    }
 
+    private void cleanup() {
+        List<GO> cleanupList = new ArrayList<>();
+
+        for (Character character : characters) {
+            if (character.canCleanup()) {
+                cleanupList.add(character);
+            }
+        }
+        characters.removeAll(cleanupList);
+
+        cleanupList = new ArrayList<>();
+        for (Projectile proj : projectiles) {
             if (proj.canCleanup()) {
                 cleanupList.add(proj);
             }
@@ -52,20 +108,12 @@ public class Game {
         projectiles.removeAll(cleanupList);
 
         cleanupList = new ArrayList<>();
-        for (Character character : characters) {
-            if (character.canCleanup()) {
-                cleanupList.add(character);
+        for (AcquirableItem item : items) {
+            if (item.canCleanup()) {
+                cleanupList.add(item);
             }
         }
-        characters.removeAll(cleanupList);
-    }
-
-    private void processActions(float deltaTime) {
-        level.spawn(deltaTime).forEach((a) -> a.apply(this));
-        
-        for (Character character : characters) {
-            character.act(deltaTime).forEach((a) -> a.apply(this));
-        }
+        items.removeAll(cleanupList);
     }
 
     public void drawLevel(float deltaTime, SpriteBatch batch) {
@@ -75,6 +123,7 @@ public class Game {
     public void drawSprites(float deltaTime, SpriteBatch batch) {
         List<GO> drawables = new ArrayList<>(characters);
         drawables.addAll(projectiles);
+        drawables.addAll(items);
 
         for (GO drawable : drawables) {
             drawable.drawSprites(deltaTime, batch);

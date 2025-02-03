@@ -2,23 +2,54 @@ package io.github.roguelyte.actions;
 
 import io.github.roguelyte.Game;
 import io.github.roguelyte.actors.Character;
-import lombok.AllArgsConstructor;
+import io.github.roguelyte.actors.AcquirableItem;
+import io.github.roguelyte.core.HasSprite;
 
-@AllArgsConstructor
-public class Spawn implements Action {
-    Character character;
+public class Spawn<E extends HasSprite> implements Action {
+    E entity;
+    float x;
+    float y;
+
+    public Spawn(E entity, float x, float y) {
+        this.entity = entity;
+        this.x = x;
+        this.y =y;
+    }
 
     @Override
     public void apply(Game game) {
+        if (entity instanceof Character && !characterExistsOn(game, x, y)) {
+            System.out.println("Spawning an character");
+            entity.getSprite().setX(x);
+            entity.getSprite().setY(y);
+            game.addCharacater((Character) entity);
+        } 
+        
+        if (entity instanceof AcquirableItem && !itemExistsOn(game, x, y)) {
+            System.out.println("Spawning an item!");
+            entity.getSprite().setX(x);
+            entity.getSprite().setY(y);
+            game.addItem((AcquirableItem) entity);
+        }
+    }
+
+    public boolean characterExistsOn(Game game, float x, float y) {
         for (Character inGameCharacter : game.getCharacters()) {
-            if (character.getSprite().getX() == inGameCharacter.getSprite().getX()
-                    && character.getSprite().getY() == inGameCharacter.getSprite().getY()) {
-                System.out.println("Cant spawn, enemy already present here");
-                return;
+            if (x == inGameCharacter.getSprite().getX() && y == inGameCharacter.getSprite().getY()) {
+                return true;
             }
         }
+        return false;
 
-        System.out.println("Spawning an character");
-        game.addCharacater(character);
+    }
+
+    public boolean itemExistsOn(Game game, float x, float y) {
+        for (AcquirableItem imGameItem : game.getItems()) {
+            if (x == imGameItem.getSprite().getX() && y == imGameItem.getSprite().getY()) {
+                return true;
+            }
+        }
+        return false;
+
     }
 }

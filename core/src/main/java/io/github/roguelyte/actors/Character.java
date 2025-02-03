@@ -8,8 +8,9 @@ import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
 import io.github.roguelyte.core.Damageable;
 import io.github.roguelyte.core.GO;
+import io.github.roguelyte.core.HasSprite;
 
-public abstract class Character implements GO, Actor {
+public abstract class Character implements GO, Actor, HasSprite {
     Sprite sprite;
     String name;
     GOConfig config;
@@ -84,7 +85,4 @@ public abstract class Character implements GO, Actor {
     public boolean canCleanup() {
         return this.healthbar.getHealth() == 0;
     }
-
-    @Override
-    public void step(float deltaTime) {}
 }

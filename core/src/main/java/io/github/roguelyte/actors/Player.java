@@ -7,17 +7,22 @@ import com.badlogic.gdx.math.Vector2;
 
 import io.github.roguelyte.actions.Action;
 import io.github.roguelyte.actions.InvokeSkill;
+import io.github.roguelyte.actions.PickupItem;
 import io.github.roguelyte.actions.Translate;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
+import io.github.roguelyte.core.Item;
 import io.github.roguelyte.core.ProjectileFactory;
+import lombok.Getter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 public class Player extends Character {
-    Map<Integer, ProjectileFactory> skillMap;
+    private Map<Integer, ProjectileFactory> skillMap;
+    private @Getter List<Item> inventory;
 
     public Player(
             Texture texture,
@@ -27,10 +32,20 @@ public class Player extends Character {
             Map<Integer, ProjectileFactory> skillMap) {
         super("player", texture, config, physics, startingHealth);
         this.skillMap = skillMap;
+        inventory = new ArrayList<>();
+    }
+
+    public void addItem(Item item) {
+        inventory.add(item);
+        System.out.println("New inventory:");
+        for (Item invitem : inventory) {
+            System.out.println(String.format("item - %s", invitem.getName()));
+        }
     }
 
     @Override
     public List<Action> act(float deltaTime) {
+        // Movement input processing
         List<Action> actions = new ArrayList<>();
         float xtransform = 0;
         float ytransform = 0;
@@ -57,6 +72,12 @@ public class Player extends Character {
             actions.add(new Translate(this.getSprite(), dx, dy));
         }
 
+        // Item interaction
+        if (this.isInputJustPressed(Input.Keys.E)) {
+            actions.add(new PickupItem(this));
+        }
+
+        // Invoke skill input processing
         for (Entry<Integer, ProjectileFactory> kv : skillMap.entrySet()) {
             if (this.isInputJustPressed(kv.getKey())) {
                 actions.add(

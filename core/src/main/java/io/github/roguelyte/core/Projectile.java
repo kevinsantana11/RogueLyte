@@ -1,5 +1,7 @@
 package io.github.roguelyte.core;
 
+import java.util.List;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -7,13 +9,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+
+import io.github.roguelyte.actions.Action;
+import io.github.roguelyte.actions.Translate;
+import io.github.roguelyte.actors.Actor;
 import io.github.roguelyte.actors.Character;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
 import io.github.roguelyte.configs.ProjectileConfig;
 import lombok.Getter;
 
-public class Projectile implements GO {
+public class Projectile implements GO, Actor, HasSprite {
     @Getter private Character originator;
     private float stateTime;
     private final Sprite sprite;
@@ -109,15 +115,16 @@ public class Projectile implements GO {
         return this.distanceTraveled >= this.projectileConfig.getMaxDistance();
     }
 
-    @Override
-    public void step(float deltaTime) {
+	@Override
+	public List<Action> act(float deltaTime) {
         stateTime += deltaTime;
         float xdist = deltaTime * this.physics.getSpeed() * xmag;
         float ydist = deltaTime * this.physics.getSpeed() * ymag;
         this.distanceTraveled =
                 this.distanceTraveled
                         + (float) Math.sqrt((double) (xdist * xdist) + (ydist * ydist));
-        sprite.setX(sprite.getX() + xdist);
-        sprite.setY(sprite.getY() + ydist);
-    }
+        return List.of(
+            new Translate(sprite, xdist, ydist, false)
+        );
+	}
 }

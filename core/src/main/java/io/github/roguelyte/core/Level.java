@@ -8,9 +8,8 @@ import com.badlogic.gdx.maps.objects.EllipseMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import io.github.roguelyte.actions.Action;
-import io.github.roguelyte.actions.Spawn;
-import io.github.roguelyte.actors.Character;
+import com.badlogic.gdx.math.Vector2;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,34 +19,28 @@ public class Level implements GO {
     private TiledMap map;
     private int tileWidth;
     private int tileHeight;
-    private Spawner spawner;
 
     public Level(
             TiledMap map,
             SpriteBatch batch,
             OrthographicCamera camera,
             int tileWidth,
-            int tileHeight,
-            Spawner spawner) {
+            int tileHeight) {
         renderer = new OrthogonalTiledMapRenderer(map, batch);
         this.camera = camera;
         this.map = map;
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
-        this.spawner = spawner;
     }
 
-    public List<Action> spawn(float deltaTime) {
-        List<Action> actions = new ArrayList<>();
-        spawner.tick(deltaTime);
+    public List<Vector2> getSpawnPoints() {
+        List<Vector2> spawnPoints = new ArrayList<>();
+
         MapLayer layer = map.getLayers().get("spawns");
         for (EllipseMapObject mo : layer.getObjects().getByType(EllipseMapObject.class)) {
-            Character spawnedCharacter = spawner.trySpawn(mo.getEllipse().x, mo.getEllipse().y);
-            if (spawnedCharacter != null) {
-                actions.add(new Spawn(spawnedCharacter));
-            }
+            spawnPoints.add(new Vector2(mo.getEllipse().x, mo.getEllipse().y));
         }
-        return actions;
+        return spawnPoints;
     }
 
     public boolean collides(int x, int y) {
@@ -76,7 +69,4 @@ public class Level implements GO {
     public boolean canCleanup() {
         return false;
     }
-
-    @Override
-    public void step(float deltaTime) {}
 }

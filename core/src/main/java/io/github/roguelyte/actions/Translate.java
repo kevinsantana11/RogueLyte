@@ -9,11 +9,19 @@ public class Translate implements Action {
     Sprite sprite;
     float x;
     float y;
+    private boolean collisionCheck;
+
+    public Translate(Sprite sprite, float x, float y) {
+        this.sprite = sprite;
+        this.x = x;
+        this.y = y;
+        this.collisionCheck = true;
+    }
 
     @Override
     public void apply(Game game) {
 
-        if (!collides(game, x, y)) {
+        if (!collisionCheck || !collides(game, x, y)) {
             sprite.translate(x, y);
         }
     }

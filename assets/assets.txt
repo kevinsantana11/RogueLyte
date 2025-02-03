@@ -704,6 +704,10 @@ players/thief.gif
 players/troll.gif
 players/werewolf.gif
 players/wizard.gif
+skin/default.fnt
+skin/uiskin.atlas
+skin/uiskin.json
+skin/uiskin.png
 spells/Arcane Bolt.png
 spells/Black And White Ray.png
 spells/Black And White Sparks.png
