@@ -1,7 +1,6 @@
 package io.github.roguelyte.db.tables;
 
 import java.util.List;
-import java.util.Set;
 
 import org.hibernate.Session;
 

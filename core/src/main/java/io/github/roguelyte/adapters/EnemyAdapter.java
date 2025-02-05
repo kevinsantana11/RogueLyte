@@ -19,7 +19,6 @@ import io.github.roguelyte.db.tables.Enemies;
 import io.github.roguelyte.db.tables.Stats;
 
 public class EnemyAdapter extends Adapter {
-    private String name;
     private Texture texture;
     private StatsBuilder statsBuilder;
     private PhysicsConfig physics;
