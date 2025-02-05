@@ -1,5 +1,7 @@
 package io.github.roguelyte.core;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -12,47 +14,45 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class Stats {
-    Float health;
-    Float armor;
-    Float speed;
-    Float dmg;
+    Map<String, Float> stats;
 
     public List<Entry<String, String>> asEntrySet() {
-        return List.of(
-            Map.entry("health", health.toString()),
-            Map.entry("armor", armor.toString()),
-            Map.entry("speed", speed.toString()),
-            Map.entry("dmg", dmg.toString()));
+        return stats.keySet().stream().map(attr -> Map.entry(attr, stats.get(attr).toString())).toList();
+    }
+
+    public Float get(String key) {
+        return stats.get(key);
+    }
+
+    @AllArgsConstructor
+    public static class StatBuilder {
+        @Getter String attrName;
+        Entry<Float, Float> range;
+
+        public Float genValue(Random rand) {
+            if (range.getKey().equals(range.getValue())) {
+                return range.getKey();
+            }
+            return rand.nextFloat(range.getKey(), range.getValue());
+        }
 
     }
 
     public static class StatsBuilder {
-        Entry<Float, Float> health;
-        Entry<Float, Float> armor;
-        Entry<Float, Float> speed;
-        Entry<Float, Float> dmg;
+        List<StatBuilder> statBuilders;
 
-        public StatsBuilder(Entry<Float, Float> health, Entry<Float, Float> armor, Entry<Float, Float> speed, Entry<Float, Float> dmg) {
-            this.health = health;
-            this.armor = armor;
-            this.speed = speed;
-            this.dmg = dmg;
+        public StatsBuilder(StatBuilder... stats) {
+            this.statBuilders = Arrays.asList(stats);
         }
 
         public Stats build(Random rand) {
-            return new Stats(
-                genValue(health, rand),
-                genValue(armor, rand),
-                genValue(speed, rand),
-                genValue(dmg, rand)
-            );
+            Map<String, Float> statMap = new HashMap<>();
+
+            for (StatBuilder statBuilder : statBuilders) {
+                statMap.put(statBuilder.getAttrName(), statBuilder.genValue(rand));
+            }
+            return new Stats(statMap);
         }
 
-        public Float genValue(Entry<Float, Float> entry, Random rand) {
-            if (entry.getKey().equals(entry.getValue())) {
-                return entry.getKey();
-            }
-            return rand.nextFloat(entry.getKey(), entry.getValue());
-        }
     }
 }

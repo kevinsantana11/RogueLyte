@@ -38,10 +38,6 @@ public class Player extends Character {
 
     public void addItem(Item item) {
         inventory.add(item);
-        System.out.println("New inventory:");
-        for (Item invitem : inventory) {
-            System.out.println(String.format("item - %s", invitem.getName()));
-        }
     }
 
     @Override

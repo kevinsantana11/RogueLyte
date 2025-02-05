@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,15 +31,8 @@ public class Stats {
     @Column(nullable = false, name = "end_range")
     @Getter @Setter private Float endRange; 
 
-    @ManyToOne(fetch=FetchType.EAGER)
-    @Getter @Setter private Items item;
-
-    public Stats(String name, Float startRange, Float endRange, Items item) {
-        this.name = name;
-        this.startRange = startRange;
-        this.endRange = endRange;
-        this.item = item;
-    }
+    @ManyToOne(optional = false)
+    @Getter @Setter private Entities entity;
 
     public Entry<Float, Float> toEntry() {
         return Map.entry(startRange, endRange);

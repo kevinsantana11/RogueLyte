@@ -19,14 +19,12 @@ public class Spawn<E extends GO> implements Action {
     @Override
     public void apply(Game game) {
         if (entity instanceof Character && !characterExistsOn(game, x, y)) {
-            System.out.println("Spawning an character");
             entity.getSprite().setX(x);
             entity.getSprite().setY(y);
             game.addCharacater((Character) entity);
         } 
         
         if (entity instanceof AcquirableItem && !itemExistsOn(game, x, y)) {
-            System.out.println("Spawning an item!");
             entity.getSprite().setX(x);
             entity.getSprite().setY(y);
             game.addItem((AcquirableItem) entity);

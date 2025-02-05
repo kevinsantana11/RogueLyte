@@ -16,9 +16,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import io.github.roguelyte.actions.Action;
 import io.github.roguelyte.actors.Character;
-import io.github.roguelyte.actors.Enemy;
 import io.github.roguelyte.actors.AcquirableItem;
 import io.github.roguelyte.actors.Player;
+import io.github.roguelyte.adapters.EnemyAdapter;
 import io.github.roguelyte.adapters.ItemAdapter;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
@@ -26,8 +26,10 @@ import io.github.roguelyte.configs.ProjectileConfig;
 import io.github.roguelyte.core.Level;
 import io.github.roguelyte.core.ProjectileFactory;
 import io.github.roguelyte.core.Spawner;
+import io.github.roguelyte.core.Stats.StatBuilder;
 import io.github.roguelyte.core.Stats.StatsBuilder;
 import io.github.roguelyte.db.Db;
+import io.github.roguelyte.db.tables.Enemies;
 import io.github.roguelyte.db.tables.Items;
 import io.github.roguelyte.ui.UI;
 
@@ -75,10 +77,10 @@ public class Main extends ApplicationAdapter {
             new GOConfig(20, 20, 0, 0),
             new PhysicsConfig(160f),
             new StatsBuilder(
-                Map.entry(0f, 0f),
-                Map.entry(0f, 0f),
-                Map.entry(0f, 0f),
-                Map.entry(50f, 50f)),
+                new StatBuilder("health", Map.entry(0f, 0f)),
+                new StatBuilder("armor", Map.entry(0f, 0f)),
+                new StatBuilder("speed", Map.entry(0f, 0f)),
+                new StatBuilder("dmg", Map.entry(50f, 50f))),
             random);
 
         Player player = new Player(
@@ -86,10 +88,10 @@ public class Main extends ApplicationAdapter {
             new GOConfig(20, 20, 0, 0),
             new PhysicsConfig(2f),
             new StatsBuilder(
-                Map.entry(100f, 100f),
-                Map.entry(0f, 0f),
-                Map.entry(0f, 0f),
-                Map.entry(0f, 0f)).build(random),
+                new StatBuilder("health", Map.entry(100f, 100f)),
+                new StatBuilder("armor", Map.entry(0f, 0f)),
+                new StatBuilder("speed", Map.entry(0f, 0f)),
+                new StatBuilder("dmg", Map.entry(0f, 0f))).build(random),
             Map.of(Input.Keys.Q, projectileFactory));
         List<Character> characters = new ArrayList<>();
         characters.add(player);
@@ -98,24 +100,31 @@ public class Main extends ApplicationAdapter {
             return Items.allItems(sess).stream()
                 .map(dbItem -> new ItemAdapter(sess, dbItem)).toList();
         });
-        List<Supplier<AcquirableItem>> suppliers = items.stream()
+        List<Supplier<AcquirableItem>> itemSuppliers = items.stream()
             .map(itm -> {
                 Supplier<AcquirableItem> supp = () -> new AcquirableItem(itm.build(random), new GOConfig(20, 20), 5f);
                 return supp;
             }) .toList();
+        Spawner<AcquirableItem> itemSpawner = new Spawner<AcquirableItem>(random, itemSuppliers);
 
-        Spawner<AcquirableItem> itemSpawner = new Spawner<AcquirableItem>(random, suppliers);
-        Spawner<Character> spawner = new Spawner<>(random, 1f, () -> new Enemy(
-            "demon",
-            txMap.get("demon"),
-            new GOConfig(20, 20, 0, 0),
-            new PhysicsConfig(1f),
-            new StatsBuilder(
-                Map.entry(100f, 100f),
-                Map.entry(0f, 0f),
-                Map.entry(0f, 0f),
-                Map.entry(0f, 0f)).build(random),
-            itemSpawner));
+        List<EnemyAdapter> enemies = database.with(sess -> {
+            return Enemies.allEnemies(sess).stream()
+                .map(dbEnemy -> 
+                    new EnemyAdapter(
+                        sess,
+                        dbEnemy,
+                        new PhysicsConfig(1f),
+                        new GOConfig(20, 20, 0, 0),
+                        itemSpawner))
+                .toList();
+        });
+        List<Supplier<Character>> enemySuppliers = enemies.stream()
+            .map(enemy -> {
+                Supplier<Character> supp = () -> enemy.build(random);
+                return supp;
+            }) .toList();
+
+        Spawner<Character> spawner = new Spawner<>(random, 1f, enemySuppliers);
 
         Level level = new Level(new TmxMapLoader().load("levels/lvl_0.tmx"),
                         batch,

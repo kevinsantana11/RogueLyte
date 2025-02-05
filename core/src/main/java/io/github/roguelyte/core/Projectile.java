@@ -96,7 +96,6 @@ public class Projectile implements GO, Actor, Drawable {
     @Override
     public void drawSprites(float deltaTime, SpriteBatch batch) {
         TextureRegion currFrame = animation.getKeyFrame(stateTime, true);
-        // System.out.println(String.format("offsets: (%f, %f), rot: {%f}", xOffset, yOffset, rot));
         batch.draw(
                 currFrame,
                 sprite.getX(),

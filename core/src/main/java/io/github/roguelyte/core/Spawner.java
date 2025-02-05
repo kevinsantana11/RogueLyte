@@ -7,8 +7,10 @@ import java.util.Random;
 import java.util.function.Supplier;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @AllArgsConstructor
+@Slf4j
 public class Spawner<Entity extends GO> {
     Entity entity;
     private Random rand;
@@ -72,10 +74,8 @@ public class Spawner<Entity extends GO> {
     }
 
     public Spawn<Entity> trySpawn(float x, float y) {
-        int supplierIdx = rand.nextInt(0, suppliers.size());
-        Supplier<Entity> supplier = suppliers.get(supplierIdx);
         if (rand.nextInt(0, 99) > 89 && stateTime % spawnInterval < 0.01f) {
-            return new Spawn<Entity>(supplier.get(), x, y);
+            return spawn(x, y);
         }
         return null;
     }
@@ -83,6 +83,8 @@ public class Spawner<Entity extends GO> {
     public Spawn<Entity> spawn(float x, float y) {
         int supplierIdx = rand.nextInt(0, suppliers.size());
         Supplier<Entity> supplier = suppliers.get(supplierIdx);
-        return new Spawn<Entity>(supplier.get(), x, y);
+        Entity e = supplier.get();
+        log.info("Spawning a {}: {}", e.getClass().getName(), e.getId());
+        return new Spawn<Entity>(e, x, y);
     }
 }
