@@ -19,7 +19,7 @@ import io.github.roguelyte.configs.PhysicsConfig;
 import io.github.roguelyte.configs.ProjectileConfig;
 import lombok.Getter;
 
-public class Projectile implements GO, Actor, HasSprite {
+public class Projectile implements GO, Actor, Drawable {
     @Getter private Character originator;
     private float stateTime;
     private final Sprite sprite;
@@ -32,6 +32,7 @@ public class Projectile implements GO, Actor, HasSprite {
     private final float ymag;
     private float rot;
     private float distanceTraveled;
+    @Getter private Stats stats;
 
     public Projectile(
             Character originator,
@@ -40,6 +41,7 @@ public class Projectile implements GO, Actor, HasSprite {
             GOConfig config,
             PhysicsConfig physics,
             ProjectileConfig projectileConfig,
+            Stats stats,
             Vector2 end) {
         this.id = name;
         this.originator = originator;
@@ -48,6 +50,7 @@ public class Projectile implements GO, Actor, HasSprite {
         this.config = config;
         this.physics = physics;
         this.projectileConfig = projectileConfig;
+        this.stats = stats;
 
         this.sprite = new Sprite(texture);
         sprite.setSize(this.config.getWidth(), this.config.getHeight());
@@ -124,7 +127,7 @@ public class Projectile implements GO, Actor, HasSprite {
                 this.distanceTraveled
                         + (float) Math.sqrt((double) (xdist * xdist) + (ydist * ydist));
         return List.of(
-            new Translate(sprite, xdist, ydist, false)
+            new Translate<Projectile>(this, xdist, ydist, false)
         );
 	}
 }

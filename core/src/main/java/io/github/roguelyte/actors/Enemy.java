@@ -10,6 +10,7 @@ import io.github.roguelyte.actions.GotoPlayer;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
 import io.github.roguelyte.core.Spawner;
+import io.github.roguelyte.core.Stats;
 
 public class Enemy extends Character {
     private Spawner<AcquirableItem> itemSpawner;
@@ -20,9 +21,9 @@ public class Enemy extends Character {
             Texture texture,
             GOConfig config,
             PhysicsConfig physics,
-            float startingHealth,
+            Stats stats,
             Spawner<AcquirableItem> itemSpawner) {
-        super(name, texture, config, physics, startingHealth);
+        super(name, texture, config, physics, stats);
         this.itemSpawner = itemSpawner;
         this.itemDropped = false;
     }

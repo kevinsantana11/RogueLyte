@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Level implements GO {
+public class Level implements Drawable {
     private OrthogonalTiledMapRenderer renderer;
     private OrthographicCamera camera;
     private TiledMap map;

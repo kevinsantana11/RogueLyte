@@ -7,29 +7,38 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
 import io.github.roguelyte.core.Damageable;
+import io.github.roguelyte.core.Drawable;
 import io.github.roguelyte.core.GO;
-import io.github.roguelyte.core.HasSprite;
+import io.github.roguelyte.core.Stats;
+import lombok.Getter;
 
-public abstract class Character implements GO, Actor, HasSprite {
+public abstract class Character implements GO, Actor, Drawable {
     Sprite sprite;
     String name;
     GOConfig config;
     PhysicsConfig physics;
     Damageable healthbar;
+    @Getter Stats stats;
 
     public Character(
             String name,
             Texture texture,
             GOConfig config,
             PhysicsConfig physics,
-            float startingHealth) {
+            Stats stats) {
         this.name = name;
         this.config = config;
         this.physics = physics;
-        this.healthbar = new Damageable(startingHealth);
+        this.stats = stats;
+        this.healthbar = new Damageable(this.stats.getHealth());
         sprite = new Sprite(texture);
         sprite.setPosition(config.getX(), config.getY());
         sprite.setSize(config.getWidth(), config.getHeight());
+    }
+
+    @Override
+    public String getId() {
+        return this.name;
     }
 
     public Sprite getSprite() {
@@ -40,8 +49,8 @@ public abstract class Character implements GO, Actor, HasSprite {
         return this.physics;
     }
 
-    public void hit(float amt, String id) {
-        this.healthbar.hit(amt, id);
+    public void hit(Stats stats, String id) {
+        this.healthbar.hit(stats.getDmg(), id);
     }
 
     public void heal(float amt, String id) {

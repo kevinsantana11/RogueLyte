@@ -3,9 +3,9 @@ package io.github.roguelyte.actions;
 import io.github.roguelyte.Game;
 import io.github.roguelyte.actors.Character;
 import io.github.roguelyte.actors.AcquirableItem;
-import io.github.roguelyte.core.HasSprite;
+import io.github.roguelyte.core.GO;
 
-public class Spawn<E extends HasSprite> implements Action {
+public class Spawn<E extends GO> implements Action {
     E entity;
     float x;
     float y;

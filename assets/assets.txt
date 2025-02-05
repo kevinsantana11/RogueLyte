@@ -704,6 +704,7 @@ players/thief.gif
 players/troll.gif
 players/werewolf.gif
 players/wizard.gif
+sample.db
 skin/default.fnt
 skin/uiskin.atlas
 skin/uiskin.json

@@ -10,6 +10,7 @@ import io.github.roguelyte.actors.Actor;
 import io.github.roguelyte.actors.Character;
 import io.github.roguelyte.actors.AcquirableItem;
 import io.github.roguelyte.actors.Player;
+import io.github.roguelyte.core.Drawable;
 import io.github.roguelyte.core.GO;
 import io.github.roguelyte.core.Level;
 import io.github.roguelyte.core.Projectile;
@@ -19,9 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import static io.github.roguelyte.utils.Utility.spritesOverlaping;
-
 @AllArgsConstructor
 public class Game {
     @Getter private Level level;
@@ -41,7 +39,6 @@ public class Game {
 
    public void process(float deltaTime, List<Action> actions) {
         actions.forEach((action) -> action.apply(this));
-        checkInteractions(deltaTime);
         cleanup();
     }
 
@@ -51,6 +48,14 @@ public class Game {
         actors.addAll(projectiles);
         actors.addAll(items);
         return actors;
+    }
+
+    public List<Drawable> getDrawables() {
+        List<Drawable> drawables = new ArrayList<>();
+        drawables.addAll(characters);
+        drawables.addAll(projectiles);
+        drawables.addAll(items);
+        return drawables;
     }
 
     public void addItem(AcquirableItem item) {
@@ -77,16 +82,6 @@ public class Game {
             }
         }
         return actions;
-    }
-
-    private void checkInteractions(float deltaTime) {
-        for (Projectile proj : projectiles) {
-            for (Character character : characters) {
-                if (spritesOverlaping(character, proj) && character != player) {
-                    character.hit(proj.getProjectileConfig().getDamage(), proj.getId());
-                }
-            }
-        }
     }
 
     private void cleanup() {
@@ -121,21 +116,10 @@ public class Game {
     }
 
     public void drawSprites(float deltaTime, SpriteBatch batch) {
-        List<GO> drawables = new ArrayList<>(characters);
-        drawables.addAll(projectiles);
-        drawables.addAll(items);
-
-        for (GO drawable : drawables) {
-            drawable.drawSprites(deltaTime, batch);
-        }
+        getDrawables().forEach((drawable) -> drawable.drawSprites(deltaTime, batch));
     }
 
     public void drawShapes(float deltaTime, ShapeRenderer shapeRenderer) {
-        List<GO> drawables = new ArrayList<>(characters);
-        drawables.addAll(projectiles);
-        drawables.addAll(characters);
-        for (GO drawable : drawables) {
-            drawable.drawShapes(deltaTime, shapeRenderer);
-        }
+        getDrawables().forEach((drawable) -> drawable.drawShapes(deltaTime, shapeRenderer));
     }
 }

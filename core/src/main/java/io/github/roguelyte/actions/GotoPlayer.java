@@ -8,11 +8,11 @@ import com.badlogic.gdx.math.Vector2;
 import io.github.roguelyte.Game;
 import io.github.roguelyte.actors.Character;
 
-public class GotoPlayer extends Translate {
+public class GotoPlayer extends Translate<Character> {
     Character character;
 
     public GotoPlayer(Character character) {
-        super(character.getSprite(), 
+        super(character, 
             character.getSprite().getX(),
             character.getSprite().getY());
         this.character = character;

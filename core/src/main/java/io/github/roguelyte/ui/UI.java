@@ -29,7 +29,6 @@ public class UI {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (!playGamePane.interesects(x, y)) {
-                    System.out.println("Reset state");
                     playGamePane.resetState();
                 }
                 super.clicked(event, x, y);

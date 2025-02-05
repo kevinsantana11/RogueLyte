@@ -11,12 +11,12 @@ import io.github.roguelyte.core.Item;
 public class Inventory extends Table {
     Player player;
     Skin skin;
-    Consumer<Item> consumer;
+    Consumer<Item> onSelectItem;
 
-    public Inventory(Player player, Skin skin, Consumer<Item> consumer) {
+    public Inventory(Player player, Skin skin, Consumer<Item> onSelectItem) {
         this.player = player;
         this.skin = skin;
-        this.consumer = consumer;
+        this.onSelectItem = onSelectItem;
         build();
     }
 
@@ -26,7 +26,7 @@ public class Inventory extends Table {
         setBackground("default-pane");
         pad(5f);
         for (Item item : player.getInventory()) {
-            add(new ItemIcon(item, skin, consumer)).width(32);
+            add(new ItemIcon(item, skin, onSelectItem)).width(32);
         }
         
     }

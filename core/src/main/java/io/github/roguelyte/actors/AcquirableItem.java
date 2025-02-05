@@ -8,13 +8,14 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import io.github.roguelyte.actions.Action;
 import io.github.roguelyte.configs.GOConfig;
+import io.github.roguelyte.core.Drawable;
 import io.github.roguelyte.core.GO;
-import io.github.roguelyte.core.HasSprite;
 import io.github.roguelyte.core.Item;
+import io.github.roguelyte.core.Stats;
 import lombok.Getter;
 import lombok.Setter;
 
-public class AcquirableItem implements GO, Actor, HasSprite {
+public class AcquirableItem implements GO, Actor, Drawable {
     private @Getter Item item;
     private @Setter boolean acquired;
     private GOConfig config;
@@ -32,6 +33,14 @@ public class AcquirableItem implements GO, Actor, HasSprite {
         sprite.setPosition(config.getX(), config.getY());
         sprite.setSize(config.getWidth(), config.getHeight());
         this.stateTime = 0;
+    }
+
+    public Stats getStats() {
+        return item.getStats();
+    }
+
+    public String getId() {
+        return this.item.getName();
     }
 
     @Override

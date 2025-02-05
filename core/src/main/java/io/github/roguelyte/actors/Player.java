@@ -13,6 +13,7 @@ import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
 import io.github.roguelyte.core.Item;
 import io.github.roguelyte.core.ProjectileFactory;
+import io.github.roguelyte.core.Stats;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -28,9 +29,9 @@ public class Player extends Character {
             Texture texture,
             GOConfig config,
             PhysicsConfig physics,
-            float startingHealth,
+            Stats stats,
             Map<Integer, ProjectileFactory> skillMap) {
-        super("player", texture, config, physics, startingHealth);
+        super("player", texture, config, physics, stats);
         this.skillMap = skillMap;
         inventory = new ArrayList<>();
     }
@@ -69,7 +70,7 @@ public class Player extends Character {
 
 
         if (xtransform != 0 || ytransform != 0) {
-            actions.add(new Translate(this.getSprite(), dx, dy));
+            actions.add(new Translate<Character>(this, dx, dy));
         }
 
         // Item interaction

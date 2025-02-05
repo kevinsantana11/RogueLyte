@@ -1,0 +1,5 @@
+INSERT INTO Items (id,assetpath,name,type) values (1, 'items/Sword01.PNG', 'sword', 'WEAPON')
+INSERT INTO Stats (name,start_range,end_range,item_id) values ('health', 0, 0, 1)
+INSERT INTO Stats (name,start_range,end_range,item_id) values ('armor', 0, 0, 1)
+INSERT INTO Stats (name,start_range,end_range,item_id) values ('speed', 0, 0, 1)
+INSERT INTO Stats (name,start_range,end_range,item_id) values ('dmg', 30, 50, 1)

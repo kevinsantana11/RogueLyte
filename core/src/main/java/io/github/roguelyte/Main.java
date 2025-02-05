@@ -19,20 +19,23 @@ import io.github.roguelyte.actors.Character;
 import io.github.roguelyte.actors.Enemy;
 import io.github.roguelyte.actors.AcquirableItem;
 import io.github.roguelyte.actors.Player;
+import io.github.roguelyte.adapters.ItemAdapter;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
 import io.github.roguelyte.configs.ProjectileConfig;
-import io.github.roguelyte.core.Item;
 import io.github.roguelyte.core.Level;
 import io.github.roguelyte.core.ProjectileFactory;
 import io.github.roguelyte.core.Spawner;
-import io.github.roguelyte.core.Stats;
+import io.github.roguelyte.core.Stats.StatsBuilder;
+import io.github.roguelyte.db.Db;
+import io.github.roguelyte.db.tables.Items;
 import io.github.roguelyte.ui.UI;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 import java.util.Random;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -48,6 +51,7 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void create() {
+        Db database = new Db("config/hibernate/cfg.xml");
         Random random = new Random();
         float worldWidth = 400;
         float worldHeight = 300;
@@ -63,35 +67,55 @@ public class Main extends ApplicationAdapter {
 
         shapeRenderer = new ShapeRenderer();
 
-        Player player =
-                new Player(
-                        txMap.get("player"),
-                        new GOConfig(20, 20, 0, 0),
-                        new PhysicsConfig(2f),
-                        100,
-                        Map.of(
-                                Input.Keys.Q,
-                                new ProjectileFactory(
-                                        "fireball",
-                                        txMap.get("fireball"),
-                                        viewport.getCamera(),
-                                        new ProjectileConfig(50, 160),
-                                        new GOConfig(20, 20, 0, 0),
-                                        new PhysicsConfig(160f),
-                                        random)));
+        ProjectileFactory projectileFactory = new ProjectileFactory(
+            "fireball",
+            txMap.get("fireball"),
+            viewport.getCamera(),
+            new ProjectileConfig(160),
+            new GOConfig(20, 20, 0, 0),
+            new PhysicsConfig(160f),
+            new StatsBuilder(
+                Map.entry(0f, 0f),
+                Map.entry(0f, 0f),
+                Map.entry(0f, 0f),
+                Map.entry(50f, 50f)),
+            random);
+
+        Player player = new Player(
+            txMap.get("player"),
+            new GOConfig(20, 20, 0, 0),
+            new PhysicsConfig(2f),
+            new StatsBuilder(
+                Map.entry(100f, 100f),
+                Map.entry(0f, 0f),
+                Map.entry(0f, 0f),
+                Map.entry(0f, 0f)).build(random),
+            Map.of(Input.Keys.Q, projectileFactory));
         List<Character> characters = new ArrayList<>();
         characters.add(player);
-        Spawner<AcquirableItem> itemSpawner = new Spawner<AcquirableItem>(() -> new AcquirableItem(
-            new Item(String.format("sword-%d", random.nextInt()), txMap.get("sword"), new Stats(100f, 20f, 5f, 15f)),
-            new GOConfig(20, 20),
-            5f));
-        Spawner<Character> spawner = new Spawner<>(random,
-                                1f, () -> new Enemy(
-                                    "demon",
-                                    txMap.get("demon"),
-                                    new GOConfig(20, 20, 0, 0),
-                                    new PhysicsConfig(1f),
-                                    100, itemSpawner));
+
+        List<ItemAdapter> items = database.with(sess -> {
+            return Items.allItems(sess).stream()
+                .map(dbItem -> new ItemAdapter(sess, dbItem)).toList();
+        });
+        List<Supplier<AcquirableItem>> suppliers = items.stream()
+            .map(itm -> {
+                Supplier<AcquirableItem> supp = () -> new AcquirableItem(itm.build(random), new GOConfig(20, 20), 5f);
+                return supp;
+            }) .toList();
+
+        Spawner<AcquirableItem> itemSpawner = new Spawner<AcquirableItem>(random, suppliers);
+        Spawner<Character> spawner = new Spawner<>(random, 1f, () -> new Enemy(
+            "demon",
+            txMap.get("demon"),
+            new GOConfig(20, 20, 0, 0),
+            new PhysicsConfig(1f),
+            new StatsBuilder(
+                Map.entry(100f, 100f),
+                Map.entry(0f, 0f),
+                Map.entry(0f, 0f),
+                Map.entry(0f, 0f)).build(random),
+            itemSpawner));
 
         Level level = new Level(new TmxMapLoader().load("levels/lvl_0.tmx"),
                         batch,

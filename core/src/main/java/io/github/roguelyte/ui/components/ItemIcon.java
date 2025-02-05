@@ -13,12 +13,12 @@ import io.github.roguelyte.core.Item;
 public class ItemIcon extends Table {
     Item item;
     Skin skin;
-    Consumer<Item> consumer;
+    Consumer<Item> onSelectItem;
 
-    public ItemIcon(Item item, Skin skin, Consumer<Item> consumer) {
+    public ItemIcon(Item item, Skin skin, Consumer<Item> onSelectItem) {
         this.item = item;
         this.skin = skin;
-        this.consumer = consumer;
+        this.onSelectItem = onSelectItem;
         build();
     }
 
@@ -31,7 +31,7 @@ public class ItemIcon extends Table {
         this.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                consumer.accept(item);
+                onSelectItem.accept(item);
                 super.clicked(event, x, y);
             }
         });

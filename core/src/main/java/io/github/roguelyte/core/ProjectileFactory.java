@@ -8,6 +8,8 @@ import io.github.roguelyte.actors.Character;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
 import io.github.roguelyte.configs.ProjectileConfig;
+import io.github.roguelyte.core.Stats.StatsBuilder;
+
 import java.util.Random;
 import lombok.AllArgsConstructor;
 
@@ -19,6 +21,7 @@ public class ProjectileFactory {
     private final ProjectileConfig projectileConfig;
     private final GOConfig config;
     private final PhysicsConfig physics;
+    private final StatsBuilder statsBuilder;
     private final Random rand;
 
     /**
@@ -46,6 +49,7 @@ public class ProjectileFactory {
                 new GOConfig(config.getWidth(), config.getHeight(), start.x, start.y),
                 physics,
                 projectileConfig,
+                statsBuilder.build(rand),
                 end);
     }
 }
