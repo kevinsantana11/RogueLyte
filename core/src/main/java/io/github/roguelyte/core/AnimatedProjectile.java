@@ -50,8 +50,8 @@ public class AnimatedProjectile extends Projectile {
                 origin.y,
                 sprite.getWidth(),
                 sprite.getHeight(),
-                1,
-                1,
+                sprite.getScaleX(),
+                sprite.getScaleY(),
                 movement.getRot());
     }
 }
