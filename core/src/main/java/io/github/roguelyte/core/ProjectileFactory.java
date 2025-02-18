@@ -7,8 +7,9 @@ import com.badlogic.gdx.math.Vector3;
 import io.github.roguelyte.actors.Character;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
-import io.github.roguelyte.configs.ProjectileConfig;
 import io.github.roguelyte.core.Stats.StatsBuilder;
+import io.github.roguelyte.movement.LinearRange;
+import io.github.roguelyte.movement.Meele;
 
 import java.util.Random;
 import lombok.AllArgsConstructor;
@@ -18,11 +19,11 @@ public class ProjectileFactory {
     private final String spellName;
     private final Texture texture;
     private final Camera camera;
-    private final ProjectileConfig projectileConfig;
     private final GOConfig config;
     private final PhysicsConfig physics;
     private final StatsBuilder statsBuilder;
     private final Random rand;
+    private final float maxDistance;
 
     /**
      * Creates a new projectile from screen coordinates.
@@ -33,23 +34,24 @@ public class ProjectileFactory {
      */
     public Projectile createFromScreenCoords(Character originator, int screenX, int screenY) {
         Vector3 worldCoords = camera.unproject(new Vector3(screenX, screenY, 0));
-        float startx =
-                originator.getSprite().getX()
-                        + (originator.getSprite().getWidth() / 2 - (config.getWidth() / 2));
-        float starty =
-                originator.getSprite().getY()
-                        + (originator.getSprite().getHeight() / 2 - (config.getHeight() / 2));
-        Vector2 start = new Vector2(startx, starty);
+        Vector2 start = new Vector2(originator.getSprite().getX(), originator.getSprite().getY());
         Vector2 end = new Vector2(worldCoords.x, worldCoords.y);
+        GOConfig newConfig = new GOConfig(
+            config.getWidth(),
+            config.getHeight(),
+            start.x,
+            start.y,
+            config.getScalex(),
+            config.getScaley());
 
         return new Projectile(
                 originator,
                 String.format("%s-%d", spellName, rand.nextInt()),
                 texture,
-                new GOConfig(config.getWidth(), config.getHeight(), start.x, start.y),
-                physics,
-                projectileConfig,
+                newConfig,
                 statsBuilder.build(rand),
+                new LinearRange(originator, physics, newConfig, maxDistance, end),
+                // new Meele(originator, physics, newConfig, end, 40),
                 end);
     }
 }

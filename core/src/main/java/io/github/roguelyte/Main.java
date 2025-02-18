@@ -22,7 +22,6 @@ import io.github.roguelyte.adapters.EnemyAdapter;
 import io.github.roguelyte.adapters.ItemAdapter;
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
-import io.github.roguelyte.configs.ProjectileConfig;
 import io.github.roguelyte.core.Level;
 import io.github.roguelyte.core.ProjectileFactory;
 import io.github.roguelyte.core.Spawner;
@@ -70,22 +69,22 @@ public class Main extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
 
         ProjectileFactory projectileFactory = new ProjectileFactory(
-            "fireball",
-            txMap.get("fireball"),
+            "sword",
+            txMap.get("sword"),
             viewport.getCamera(),
-            new ProjectileConfig(160),
-            new GOConfig(20, 20, 0, 0),
-            new PhysicsConfig(160f),
+            new GOConfig(32, 32, 1/2f, 1/2f),
+            new PhysicsConfig(80f),
             new StatsBuilder(
                 new StatBuilder("health", Map.entry(0f, 0f)),
                 new StatBuilder("armor", Map.entry(0f, 0f)),
                 new StatBuilder("speed", Map.entry(0f, 0f)),
                 new StatBuilder("dmg", Map.entry(50f, 50f))),
-            random);
+            random,
+            80f);
 
         Player player = new Player(
             txMap.get("player"),
-            new GOConfig(20, 20, 0, 0),
+            new GOConfig(32, 32, 1/2f, 1/2f),
             new PhysicsConfig(2f),
             new StatsBuilder(
                 new StatBuilder("health", Map.entry(100f, 100f)),
@@ -102,7 +101,7 @@ public class Main extends ApplicationAdapter {
         });
         List<Supplier<AcquirableItem>> itemSuppliers = items.stream()
             .map(itm -> {
-                Supplier<AcquirableItem> supp = () -> new AcquirableItem(itm.build(random), new GOConfig(20, 20), 5f);
+                Supplier<AcquirableItem> supp = () -> new AcquirableItem(itm.build(random), new GOConfig(32, 32), 5f);
                 return supp;
             }) .toList();
         Spawner<AcquirableItem> itemSpawner = new Spawner<AcquirableItem>(random, itemSuppliers);
@@ -114,7 +113,7 @@ public class Main extends ApplicationAdapter {
                         sess,
                         dbEnemy,
                         new PhysicsConfig(1f),
-                        new GOConfig(20, 20, 0, 0),
+                        new GOConfig(32, 32),
                         itemSpawner))
                 .toList();
         });

@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
+
 import io.github.roguelyte.configs.GOConfig;
 import io.github.roguelyte.configs.PhysicsConfig;
 import io.github.roguelyte.core.Damageable;
@@ -17,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class Character implements GO, Actor, Drawable {
     Sprite sprite;
     String name;
-    GOConfig config;
+    @Getter GOConfig config;
     PhysicsConfig physics;
     Damageable healthbar;
     @Getter Stats stats;
@@ -36,6 +38,7 @@ public abstract class Character implements GO, Actor, Drawable {
         sprite = new Sprite(texture);
         sprite.setPosition(config.getX(), config.getY());
         sprite.setSize(config.getWidth(), config.getHeight());
+        sprite.setScale(config.getScalex(), config.getScaley());
     }
 
     @Override
@@ -45,6 +48,18 @@ public abstract class Character implements GO, Actor, Drawable {
 
     public Sprite getSprite() {
         return sprite;
+    }
+
+    public Vector2 getPosition() {
+        return new Vector2(sprite.getX(), sprite.getY());
+    }
+
+    public Vector2 getSize() {
+        return new Vector2(sprite.getWidth() * sprite.getScaleX(), sprite.getHeight() * sprite.getScaleY());
+    }
+
+    public Vector2 getCenter() {
+        return getPosition().add(getSize().scl(1/2f));
     }
 
     public PhysicsConfig getPhysicsConfig() {
@@ -65,18 +80,12 @@ public abstract class Character implements GO, Actor, Drawable {
 
     @Override
     public void drawSprites(float deltaTime, SpriteBatch batch) {
-        batch.draw(
-                sprite.getTexture(),
-                sprite.getX(),
-                sprite.getY(),
-                config.getWidth(),
-                config.getHeight());
+        sprite.draw(batch);
     }
 
     @Override
     public void drawShapes(float deltaTime, ShapeRenderer shapeRenderer) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(1, 0, 0, 1);
         float green = healthbar.getHealth() / healthbar.getMaxHealth();
         float red = 1 - green;
         shapeRenderer.setColor(0, 1, 0, 1);

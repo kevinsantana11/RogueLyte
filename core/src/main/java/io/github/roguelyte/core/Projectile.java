@@ -3,130 +3,101 @@ package io.github.roguelyte.core;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 import io.github.roguelyte.actions.Action;
 import io.github.roguelyte.actions.Translate;
-import io.github.roguelyte.actors.Actor;
 import io.github.roguelyte.actors.Character;
+import io.github.roguelyte.actors.Actor;
 import io.github.roguelyte.configs.GOConfig;
-import io.github.roguelyte.configs.PhysicsConfig;
-import io.github.roguelyte.configs.ProjectileConfig;
+import io.github.roguelyte.movement.Movement;
 import lombok.Getter;
 
 public class Projectile implements GO, Actor, Drawable {
     @Getter private Character originator;
-    private float stateTime;
-    private final Sprite sprite;
-    private final Animation<TextureRegion> animation;
+    protected float stateTime;
+    @Getter protected Sprite sprite;
     private GOConfig config;
-    private PhysicsConfig physics;
-    @Getter private ProjectileConfig projectileConfig;
     @Getter private String id;
-    private final float xmag;
-    private final float ymag;
-    private float rot;
-    private float distanceTraveled;
     @Getter private Stats stats;
+    private Vector2 start;
+    protected Vector2 end;
+    protected Movement movement;
 
     public Projectile(
             Character originator,
             String name,
             Texture texture,
             GOConfig config,
-            PhysicsConfig physics,
-            ProjectileConfig projectileConfig,
             Stats stats,
+            Movement movement,
             Vector2 end) {
         this.id = name;
         this.originator = originator;
         this.stateTime = 0;
-        this.distanceTraveled = 0;
         this.config = config;
-        this.physics = physics;
-        this.projectileConfig = projectileConfig;
         this.stats = stats;
+        this.movement = movement;
+        this.end = end;
 
-        this.sprite = new Sprite(texture);
+        sprite = new Sprite(texture);
         sprite.setSize(this.config.getWidth(), this.config.getHeight());
+        sprite.setScale(this.config.getScalex(), this.config.getScaley());
 
-        float xdiff = end.x - this.config.getX();
-        float ydiff = end.y - this.config.getY();
-        double mag = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
-        xmag = mag > 0 ? (float) (xdiff / mag) : 1;
-        ymag = mag > 0 ? (float) (ydiff / mag) : 1;
+        start = movement.getStart();
 
-        sprite.setX(this.config.getX());
-        sprite.setY(this.config.getY());
-
-        double ratio = ydiff / xdiff;
-        double rads = Math.atan(ratio);
-        double deg = Math.abs(Math.toDegrees(rads));
-
-        if (xdiff > 0 && ydiff > 0) {
-            rot = (float) deg;
-        } else if (xdiff < 0 && ydiff > 0) {
-            rot = 180 - (float) deg;
-        } else if (xdiff < 0 && ydiff < 0) {
-            rot = 180 + (float) deg;
-        } else {
-            rot = 360 - (float) deg;
-        }
-
-        TextureRegion[][] tmpFrames = TextureRegion.split(texture, 16, 16);
-        TextureRegion[] animationFrames = new TextureRegion[tmpFrames.length * tmpFrames[0].length];
-        int index = 0;
-        for (int i = 0; i < tmpFrames.length; i++) {
-            for (int j = 0; j < tmpFrames[i].length; j++) {
-                animationFrames[index++] = tmpFrames[i][j];
-            }
-        }
-        this.animation = new Animation<>(0.1f, animationFrames);
+        sprite.setX(start.x);
+        sprite.setY(start.y);
     }
 
-    public Sprite getSprite() {
-        return sprite;
+    @Override
+    public boolean canCleanup() {
+        return movement.isDone();
     }
 
     @Override
     public void drawSprites(float deltaTime, SpriteBatch batch) {
-        TextureRegion currFrame = animation.getKeyFrame(stateTime, true);
-        batch.draw(
-                currFrame,
-                sprite.getX(),
-                sprite.getY(),
-                sprite.getWidth() / 2,
-                sprite.getHeight() / 2,
-                sprite.getWidth(),
-                sprite.getHeight(),
-                1,
-                1,
-                rot);
+        Vector2 flipvec = movement.getFlip();
+        Vector2 origin = movement.origin();
+        sprite.setFlip(flipvec.x == 1f, flipvec.y == 1f);
+        sprite.setOrigin(origin.x, origin.y);
+        sprite.setRotation(movement.getRot());
+        sprite.draw(batch);
     }
 
     @Override
-    public void drawShapes(float deltaTime, ShapeRenderer shapeRenderer) {}
-
-    @Override
-    public boolean canCleanup() {
-        return this.distanceTraveled >= this.projectileConfig.getMaxDistance();
+    public void drawShapes(float deltaTime, ShapeRenderer shapeRenderer) {
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(1, 0, 0, 1);
+        shapeRenderer.rect(
+                sprite.getX(),
+                sprite.getY(),
+                sprite.getOriginX(),
+                sprite.getOriginY(),
+                sprite.getWidth(), 
+                sprite.getHeight(),
+                sprite.getScaleX(),
+                sprite.getScaleY(),
+                sprite.getRotation()
+                );
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(1, 0, 0, 1);
+        shapeRenderer.line(start, end);
+        shapeRenderer.end();
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Point);
+        shapeRenderer.end();
     }
 
 	@Override
 	public List<Action> act(float deltaTime) {
         stateTime += deltaTime;
-        float xdist = deltaTime * this.physics.getSpeed() * xmag;
-        float ydist = deltaTime * this.physics.getSpeed() * ymag;
-        this.distanceTraveled =
-                this.distanceTraveled
-                        + (float) Math.sqrt((double) (xdist * xdist) + (ydist * ydist));
+        Vector2 translation = movement.to(deltaTime);
         return List.of(
-            new Translate<Projectile>(this, xdist, ydist, false)
+            new Translate<Projectile>(this, translation.x, translation.y, false)
         );
 	}
 }
